@@ -19,7 +19,7 @@ Window {
     property real speedVelocity: 0
     property date currentDateTime: new Date()
     property int ambientTemperature: 20
-    property string driveMode: "Driving"
+    property string driveMode: "BMW 540i"
     property int remainingRange: 450
     property int odometer: 12580
     property bool enableGaugeBlur: false
@@ -272,121 +272,70 @@ Window {
             }
         }
 
-        // Canh duong trung tam la placeholder vector; co the thay bang anh sau.
-        Canvas {
-            id: roadScene
-            z: 1
-            x: 352
-            y: 235
-            width: 324
-            height: 251
-            renderTarget: Canvas.Image
-            antialiasing: true
-
-            onAvailableChanged: if (available) requestPaint()
-
-            onPaint: {
-                var ctx = getContext("2d")
-                ctx.reset()
-
-                var sky = ctx.createLinearGradient(0, 0, 0, 128)
-                sky.addColorStop(0.0, "rgba(4,20,33,0)")
-                sky.addColorStop(0.48, "rgba(8,44,70,0.78)")
-                sky.addColorStop(1.0, "rgba(8,31,48,0.12)")
-                ctx.fillStyle = sky
-                ctx.fillRect(0, 0, width, 130)
-
-                // Chan troi thanh pho mo de giu dung bo cuc anh mau.
-                var skyline = [18, 30, 23, 38, 27, 47, 34, 31, 43, 25,
-                               28, 46, 32, 52, 30, 37, 24, 43, 29, 35,
-                               20, 42, 27, 49, 29, 37, 25, 44, 31, 22]
-                ctx.beginPath()
-                ctx.moveTo(0, 112)
-                for (var i = 0; i < skyline.length; ++i) {
-                    var sx = i * width / (skyline.length - 1)
-                    ctx.lineTo(sx, 112 - skyline[i] * 0.56)
-                }
-                ctx.lineTo(width, 126)
-                ctx.lineTo(0, 126)
-                ctx.closePath()
-                ctx.fillStyle = "#06131d"
-                ctx.fill()
-
-                var road = ctx.createLinearGradient(0, 84, 0, height)
-                road.addColorStop(0.0, "#07141d")
-                road.addColorStop(1.0, "#010406")
-                ctx.beginPath()
-                ctx.moveTo(147, 87)
-                ctx.lineTo(177, 87)
-                ctx.lineTo(311, 251)
-                ctx.lineTo(13, 251)
-                ctx.closePath()
-                ctx.fillStyle = road
-                ctx.fill()
-
-                var edge = ctx.createLinearGradient(0, 85, 0, 251)
-                edge.addColorStop(0.0, "#7fa5bd")
-                edge.addColorStop(1.0, "#e8f4fb")
-                ctx.lineWidth = 2.4
-                ctx.strokeStyle = edge
-                ctx.beginPath()
-                ctx.moveTo(150, 87)
-                ctx.lineTo(13, 251)
-                ctx.moveTo(174, 87)
-                ctx.lineTo(311, 251)
-                ctx.stroke()
-
-                ctx.lineWidth = 1
-                ctx.strokeStyle = "rgba(65,115,148,0.75)"
-                ctx.beginPath()
-                ctx.moveTo(155, 90)
-                ctx.lineTo(81, 251)
-                ctx.moveTo(169, 90)
-                ctx.lineTo(243, 251)
-                ctx.stroke()
-            }
-        }
-
-        // Placeholder xe dat dung toa do; se thay truc tiep bang asset khi duoc cung cap.
+        // Xe trung bay: anh that tren be sang va bong do tinh.
         Item {
-            id: carPlaceholder
-            z: 3
-            x: 475
-            y: 330
-            width: 78
-            height: 58
+            id: vehicleShowcase
+            z: 1
+            x: 367
+            y: 235
+            width: 290
+            height: 190
 
             Rectangle {
-                x: 11
-                y: 15
-                width: 56
-                height: 34
-                radius: 9
+                x: 40
+                y: 30
+                width: 210
+                height: 128
+                radius: 64
+                color: "#0b3958"
+                opacity: 0.16
+            }
+
+            Rectangle {
+                x: 18
+                y: 148
+                width: 254
+                height: 28
+                radius: 14
+                color: "#000000"
+                opacity: 0.27
+            }
+
+            Rectangle {
+                x: 40
+                y: 154
+                width: 210
+                height: 16
+                radius: 8
+                color: "#020405"
+                opacity: 0.56
+            }
+
+            Rectangle {
+                x: 55
+                y: 160
+                width: 180
+                height: 2
                 gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#d5dce1" }
-                    GradientStop { position: 0.48; color: "#6b7780" }
-                    GradientStop { position: 1.0; color: "#30383e" }
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: 0.0; color: "#00121e" }
+                    GradientStop { position: 0.5; color: "#2aa4df" }
+                    GradientStop { position: 1.0; color: "#00121e" }
                 }
-                border.width: 1
-                border.color: "#e4e9ec"
+                opacity: 0.72
             }
 
-            Rectangle {
-                x: 20
-                y: 6
-                width: 38
-                height: 22
-                radius: 7
-                color: "#192c39"
-                border.width: 2
-                border.color: "#89969f"
+            Image {
+                id: displayVehicle
+                x: 0
+                y: 0
+                width: 290
+                height: 148
+                source: "images/vehicle-display.png"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
             }
-
-            Rectangle { x: 14; y: 34; width: 13; height: 6; radius: 3; color: "#f0202f" }
-            Rectangle { x: 51; y: 34; width: 13; height: 6; radius: 3; color: "#f0202f" }
-            Rectangle { x: 28; y: 44; width: 22; height: 3; radius: 1; color: "#b9d3e3" }
-            Rectangle { x: 10; y: 47; width: 7; height: 7; radius: 2; color: "#050607" }
-            Rectangle { x: 61; y: 47; width: 7; height: 7; radius: 2; color: "#050607" }
         }
 
         Item {
