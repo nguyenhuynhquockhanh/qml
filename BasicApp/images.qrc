@@ -3,5 +3,6 @@
         <file>fonts/OpenSans-Light.ttf</file>
         <file>images/sun.png</file>
         <file>images/white.png</file>
+        <file>images/cluster-bezel.png</file>
     </qresource>
 </RCC>

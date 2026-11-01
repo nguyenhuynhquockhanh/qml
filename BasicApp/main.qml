@@ -64,7 +64,7 @@ Window {
         transformOrigin: Item.Center
         scale: Math.min(window.width / width, window.height / height)
 
-        // Nen vo cluster va long hien thi duoc ve theo silhouette cua anh mau.
+        // Nen ngoai va vung man hinh nam phia sau asset bezel that.
         Canvas {
             id: clusterBody
             anchors.fill: parent
@@ -73,40 +73,17 @@ Window {
 
             onAvailableChanged: if (available) requestPaint()
 
-            function outerPath(ctx) {
-                ctx.beginPath()
-                ctx.moveTo(82, 31)
-                ctx.bezierCurveTo(245, 4, 760, 3, 914, 49)
-                ctx.bezierCurveTo(963, 64, 994, 108, 1004, 176)
-                ctx.bezierCurveTo(1011, 228, 1012, 344, 1005, 398)
-                ctx.bezierCurveTo(997, 459, 973, 497, 926, 522)
-                ctx.bezierCurveTo(880, 546, 790, 553, 675, 553)
-                ctx.lineTo(572, 553)
-                ctx.bezierCurveTo(551, 553, 533, 548, 516, 541)
-                ctx.bezierCurveTo(499, 548, 481, 553, 459, 553)
-                ctx.lineTo(334, 556)
-                ctx.bezierCurveTo(226, 557, 143, 549, 96, 523)
-                ctx.bezierCurveTo(43, 493, 19, 451, 15, 391)
-                ctx.lineTo(15, 188)
-                ctx.bezierCurveTo(17, 105, 37, 49, 82, 31)
-                ctx.closePath()
-            }
-
             function innerPath(ctx) {
                 ctx.beginPath()
-                ctx.moveTo(109, 71)
-                ctx.bezierCurveTo(281, 43, 727, 44, 892, 84)
-                ctx.bezierCurveTo(943, 97, 970, 139, 975, 205)
-                ctx.bezierCurveTo(979, 254, 980, 344, 974, 383)
-                ctx.bezierCurveTo(970, 434, 947, 470, 903, 489)
-                ctx.bezierCurveTo(834, 518, 708, 514, 590, 510)
-                ctx.lineTo(565, 510)
-                ctx.bezierCurveTo(546, 510, 529, 503, 516, 494)
-                ctx.bezierCurveTo(503, 503, 485, 510, 464, 511)
-                ctx.bezierCurveTo(338, 517, 206, 519, 123, 496)
-                ctx.bezierCurveTo(76, 483, 52, 442, 49, 383)
-                ctx.lineTo(49, 202)
-                ctx.bezierCurveTo(51, 131, 69, 86, 109, 71)
+                ctx.moveTo(260, 142)
+                ctx.bezierCurveTo(199, 143, 148, 174, 123, 235)
+                ctx.bezierCurveTo(96, 301, 109, 393, 159, 454)
+                ctx.bezierCurveTo(187, 487, 225, 498, 278, 499)
+                ctx.bezierCurveTo(358, 502, 436, 490, 512, 502)
+                ctx.bezierCurveTo(588, 490, 666, 502, 746, 499)
+                ctx.bezierCurveTo(800, 498, 838, 487, 865, 454)
+                ctx.bezierCurveTo(915, 393, 928, 301, 901, 235)
+                ctx.bezierCurveTo(876, 174, 825, 143, 764, 142)
                 ctx.closePath()
             }
 
@@ -121,23 +98,6 @@ Window {
                 ctx.fillStyle = outside
                 ctx.fillRect(0, 0, width, height)
 
-                outerPath(ctx)
-                var shell = ctx.createLinearGradient(0, 10, 0, 570)
-                shell.addColorStop(0.0, "#111a22")
-                shell.addColorStop(0.18, "#030609")
-                shell.addColorStop(0.75, "#060a0d")
-                shell.addColorStop(1.0, "#151c21")
-                ctx.fillStyle = shell
-                ctx.fill()
-
-                ctx.save()
-                ctx.shadowBlur = 16
-                ctx.shadowColor = "rgba(0,0,0,0.72)"
-                ctx.lineWidth = 18
-                ctx.strokeStyle = "#020405"
-                ctx.stroke()
-                ctx.restore()
-
                 innerPath(ctx)
                 var display = ctx.createRadialGradient(515, 285, 25,
                                                        515, 300, 535)
@@ -147,9 +107,6 @@ Window {
                 display.addColorStop(1.0, "#000204")
                 ctx.fillStyle = display
                 ctx.fill()
-                ctx.lineWidth = 2
-                ctx.strokeStyle = "#344853"
-                ctx.stroke()
             }
         }
 
@@ -212,7 +169,7 @@ Window {
             id: topInformation
             z: 4
             x: 357
-            y: 102
+            y: 148
             width: 322
             height: 61
 
@@ -276,7 +233,7 @@ Window {
         Text {
             z: 4
             x: 430
-            y: 181
+            y: 196
             width: 170
             horizontalAlignment: Text.AlignHCenter
             text: window.driveMode
@@ -289,7 +246,7 @@ Window {
             id: rangeInformation
             z: 4
             x: 415
-            y: 214
+            y: 226
             width: 202
             height: 43
 
@@ -456,7 +413,7 @@ Window {
         Item {
             z: 4
             x: 423
-            y: 485
+            y: 449
             width: 184
             height: 36
 
@@ -487,62 +444,15 @@ Window {
             }
         }
 
-        // Vien chrome nam tren cung de chep dung canh ngoai cua cluster.
-        Canvas {
-            id: chromeBorder
+        // Asset bezel that thay hoan toan Canvas vien cu.
+        Image {
+            id: clusterBezel
             z: 10
             anchors.fill: parent
-            renderTarget: Canvas.Image
-            antialiasing: true
-
-            onAvailableChanged: if (available) requestPaint()
-
-            function outerPath(ctx) {
-                ctx.beginPath()
-                ctx.moveTo(82, 31)
-                ctx.bezierCurveTo(245, 4, 760, 3, 914, 49)
-                ctx.bezierCurveTo(963, 64, 994, 108, 1004, 176)
-                ctx.bezierCurveTo(1011, 228, 1012, 344, 1005, 398)
-                ctx.bezierCurveTo(997, 459, 973, 497, 926, 522)
-                ctx.bezierCurveTo(880, 546, 790, 553, 675, 553)
-                ctx.lineTo(572, 553)
-                ctx.bezierCurveTo(551, 553, 533, 548, 516, 541)
-                ctx.bezierCurveTo(499, 548, 481, 553, 459, 553)
-                ctx.lineTo(334, 556)
-                ctx.bezierCurveTo(226, 557, 143, 549, 96, 523)
-                ctx.bezierCurveTo(43, 493, 19, 451, 15, 391)
-                ctx.lineTo(15, 188)
-                ctx.bezierCurveTo(17, 105, 37, 49, 82, 31)
-                ctx.closePath()
-            }
-
-            onPaint: {
-                var ctx = getContext("2d")
-                ctx.reset()
-                outerPath(ctx)
-
-                ctx.lineWidth = 17
-                ctx.strokeStyle = "#11191e"
-                ctx.stroke()
-
-                outerPath(ctx)
-
-                var chrome = ctx.createLinearGradient(0, 20, 0, 565)
-                chrome.addColorStop(0.0, "#47535b")
-                chrome.addColorStop(0.16, "#c6cdd1")
-                chrome.addColorStop(0.42, "#58656d")
-                chrome.addColorStop(0.72, "#8a969d")
-                chrome.addColorStop(0.90, "#d7dcdf")
-                chrome.addColorStop(1.0, "#46525a")
-                ctx.lineWidth = 8
-                ctx.strokeStyle = chrome
-                ctx.stroke()
-
-                outerPath(ctx)
-                ctx.lineWidth = 1.2
-                ctx.strokeStyle = "rgba(241,245,247,0.72)"
-                ctx.stroke()
-            }
+            source: "images/cluster-bezel.png"
+            fillMode: Image.Stretch
+            smooth: true
+            mipmap: true
         }
     }
 }

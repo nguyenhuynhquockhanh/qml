@@ -66,14 +66,6 @@ Item {
     onSubMinTextChanged: requestBackgroundPaint()
     onSubMaxTextChanged: requestBackgroundPaint()
 
-    Rectangle {
-        width: root.dialSize - 6
-        height: width
-        radius: width / 2
-        anchors.centerIn: parent
-        color: "#02070c"
-    }
-
     Canvas {
         id: backgroundCanvas
         width: Math.ceil(root.width * root.renderScale)
