@@ -76,30 +76,37 @@ Window {
             function outerPath(ctx) {
                 ctx.beginPath()
                 ctx.moveTo(82, 31)
-                ctx.bezierCurveTo(270, 0, 744, 2, 913, 51)
-                ctx.bezierCurveTo(980, 70, 1007, 132, 1010, 226)
-                ctx.lineTo(1010, 380)
-                ctx.bezierCurveTo(1007, 463, 971, 516, 901, 538)
-                ctx.bezierCurveTo(798, 570, 655, 565, 516, 559)
-                ctx.bezierCurveTo(365, 566, 211, 572, 108, 541)
-                ctx.bezierCurveTo(43, 521, 15, 466, 14, 391)
-                ctx.lineTo(14, 190)
-                ctx.bezierCurveTo(16, 108, 35, 50, 82, 31)
+                ctx.bezierCurveTo(245, 4, 760, 3, 914, 49)
+                ctx.bezierCurveTo(963, 64, 994, 108, 1004, 176)
+                ctx.bezierCurveTo(1011, 228, 1012, 344, 1005, 398)
+                ctx.bezierCurveTo(997, 459, 973, 497, 926, 522)
+                ctx.bezierCurveTo(880, 546, 790, 553, 675, 553)
+                ctx.lineTo(572, 553)
+                ctx.bezierCurveTo(551, 553, 533, 548, 516, 541)
+                ctx.bezierCurveTo(499, 548, 481, 553, 459, 553)
+                ctx.lineTo(334, 556)
+                ctx.bezierCurveTo(226, 557, 143, 549, 96, 523)
+                ctx.bezierCurveTo(43, 493, 19, 451, 15, 391)
+                ctx.lineTo(15, 188)
+                ctx.bezierCurveTo(17, 105, 37, 49, 82, 31)
                 ctx.closePath()
             }
 
             function innerPath(ctx) {
                 ctx.beginPath()
-                ctx.moveTo(105, 72)
-                ctx.bezierCurveTo(282, 43, 724, 44, 891, 86)
-                ctx.bezierCurveTo(946, 100, 972, 151, 974, 231)
-                ctx.lineTo(974, 373)
-                ctx.bezierCurveTo(972, 434, 946, 474, 885, 493)
-                ctx.bezierCurveTo(780, 524, 646, 521, 516, 516)
-                ctx.bezierCurveTo(375, 522, 230, 527, 126, 499)
-                ctx.bezierCurveTo(75, 485, 50, 441, 49, 381)
-                ctx.lineTo(49, 204)
-                ctx.bezierCurveTo(50, 133, 67, 87, 105, 72)
+                ctx.moveTo(109, 71)
+                ctx.bezierCurveTo(281, 43, 727, 44, 892, 84)
+                ctx.bezierCurveTo(943, 97, 970, 139, 975, 205)
+                ctx.bezierCurveTo(979, 254, 980, 344, 974, 383)
+                ctx.bezierCurveTo(970, 434, 947, 470, 903, 489)
+                ctx.bezierCurveTo(834, 518, 708, 514, 590, 510)
+                ctx.lineTo(565, 510)
+                ctx.bezierCurveTo(546, 510, 529, 503, 516, 494)
+                ctx.bezierCurveTo(503, 503, 485, 510, 464, 511)
+                ctx.bezierCurveTo(338, 517, 206, 519, 123, 496)
+                ctx.bezierCurveTo(76, 483, 52, 442, 49, 383)
+                ctx.lineTo(49, 202)
+                ctx.bezierCurveTo(51, 131, 69, 86, 109, 71)
                 ctx.closePath()
             }
 
@@ -140,8 +147,8 @@ Window {
                 display.addColorStop(1.0, "#000204")
                 ctx.fillStyle = display
                 ctx.fill()
-                ctx.lineWidth = 3
-                ctx.strokeStyle = "#1f2e38"
+                ctx.lineWidth = 2
+                ctx.strokeStyle = "#344853"
                 ctx.stroke()
             }
         }
@@ -150,10 +157,10 @@ Window {
         CustomGauge {
             id: speedGauge
             z: 2
-            x: 41
-            y: 102
-            width: 432
-            height: 432
+            x: 57
+            y: 118
+            width: 400
+            height: 400
             minValue: 0
             maxValue: 240
             majorStep: 20
@@ -161,7 +168,8 @@ Window {
             value: window.speedVal
             titleText: ""
             unitText: "km/h"
-            accentColor: "#19aef5"
+            accentColor: "#2e92bf"
+            dangerColor: "#d8263d"
             dangerStart: 220
             displayDecimals: 0
             enableDynamicBlur: window.enableGaugeBlur
@@ -187,7 +195,8 @@ Window {
             value: window.rpmVal
             titleText: ""
             unitText: "x1000 rpm"
-            accentColor: "#159ee9"
+            accentColor: "#2e92bf"
+            dangerColor: "#d8263d"
             dangerStart: 6.5
             displayDecimals: 1
             enableDynamicBlur: window.enableGaugeBlur
@@ -491,15 +500,19 @@ Window {
             function outerPath(ctx) {
                 ctx.beginPath()
                 ctx.moveTo(82, 31)
-                ctx.bezierCurveTo(270, 0, 744, 2, 913, 51)
-                ctx.bezierCurveTo(980, 70, 1007, 132, 1010, 226)
-                ctx.lineTo(1010, 380)
-                ctx.bezierCurveTo(1007, 463, 971, 516, 901, 538)
-                ctx.bezierCurveTo(798, 570, 655, 565, 516, 559)
-                ctx.bezierCurveTo(365, 566, 211, 572, 108, 541)
-                ctx.bezierCurveTo(43, 521, 15, 466, 14, 391)
-                ctx.lineTo(14, 190)
-                ctx.bezierCurveTo(16, 108, 35, 50, 82, 31)
+                ctx.bezierCurveTo(245, 4, 760, 3, 914, 49)
+                ctx.bezierCurveTo(963, 64, 994, 108, 1004, 176)
+                ctx.bezierCurveTo(1011, 228, 1012, 344, 1005, 398)
+                ctx.bezierCurveTo(997, 459, 973, 497, 926, 522)
+                ctx.bezierCurveTo(880, 546, 790, 553, 675, 553)
+                ctx.lineTo(572, 553)
+                ctx.bezierCurveTo(551, 553, 533, 548, 516, 541)
+                ctx.bezierCurveTo(499, 548, 481, 553, 459, 553)
+                ctx.lineTo(334, 556)
+                ctx.bezierCurveTo(226, 557, 143, 549, 96, 523)
+                ctx.bezierCurveTo(43, 493, 19, 451, 15, 391)
+                ctx.lineTo(15, 188)
+                ctx.bezierCurveTo(17, 105, 37, 49, 82, 31)
                 ctx.closePath()
             }
 
@@ -508,20 +521,26 @@ Window {
                 ctx.reset()
                 outerPath(ctx)
 
+                ctx.lineWidth = 17
+                ctx.strokeStyle = "#11191e"
+                ctx.stroke()
+
+                outerPath(ctx)
+
                 var chrome = ctx.createLinearGradient(0, 20, 0, 565)
-                chrome.addColorStop(0.0, "#66727a")
-                chrome.addColorStop(0.16, "#e7ecef")
-                chrome.addColorStop(0.42, "#3a464e")
-                chrome.addColorStop(0.72, "#9ba6ad")
-                chrome.addColorStop(0.90, "#f0f3f5")
-                chrome.addColorStop(1.0, "#5d6970")
-                ctx.lineWidth = 10
+                chrome.addColorStop(0.0, "#47535b")
+                chrome.addColorStop(0.16, "#c6cdd1")
+                chrome.addColorStop(0.42, "#58656d")
+                chrome.addColorStop(0.72, "#8a969d")
+                chrome.addColorStop(0.90, "#d7dcdf")
+                chrome.addColorStop(1.0, "#46525a")
+                ctx.lineWidth = 8
                 ctx.strokeStyle = chrome
                 ctx.stroke()
 
                 outerPath(ctx)
-                ctx.lineWidth = 2
-                ctx.strokeStyle = "rgba(255,255,255,0.88)"
+                ctx.lineWidth = 1.2
+                ctx.strokeStyle = "rgba(241,245,247,0.72)"
                 ctx.stroke()
             }
         }

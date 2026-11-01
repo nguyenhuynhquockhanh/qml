@@ -10,8 +10,8 @@ Item {
     property int minorTicksPerStep: 4
     property string titleText: "SPEED"
     property string unitText: "km/h"
-    property color accentColor: "#16a9ff"
-    property color dangerColor: "#ff293d"
+    property color accentColor: "#2e92bf"
+    property color dangerColor: "#d8263d"
     property real dangerStart: 220
     property int displayDecimals: 0
     property bool enableDynamicBlur: false
@@ -109,17 +109,17 @@ Item {
 
             ctx.beginPath()
             ctx.arc(cx, cy, arcRadius, startRad, endRad)
-            ctx.lineWidth = 7
-            ctx.strokeStyle = "#101f2a"
+            ctx.lineWidth = 4
+            ctx.strokeStyle = "#14232d"
             ctx.stroke()
 
             // Vung redline co dinh; cung gia tri dong se duoc ve o Canvas rieng.
             ctx.save()
-            ctx.shadowBlur = 5
+            ctx.shadowBlur = 3
             ctx.shadowColor = root.dangerColor
             ctx.beginPath()
             ctx.arc(cx, cy, arcRadius, dangerRad, endRad)
-            ctx.lineWidth = 5
+            ctx.lineWidth = 3.5
             ctx.strokeStyle = root.dangerColor
             ctx.stroke()
             ctx.restore()
@@ -174,21 +174,21 @@ Item {
 
                 // Cung dong ho phu: xanh o muc binh thuong, do o vung cao.
                 ctx.save()
-                ctx.shadowBlur = 7
+                ctx.shadowBlur = 3
                 ctx.shadowColor = root.accentColor
                 ctx.beginPath()
                 ctx.arc(cx, cy, subRadius, subStartRad, subSplitRad, true)
-                ctx.lineWidth = 6
+                ctx.lineWidth = 4.5
                 ctx.strokeStyle = root.accentColor
                 ctx.stroke()
                 ctx.restore()
 
                 ctx.save()
-                ctx.shadowBlur = 7
+                ctx.shadowBlur = 3
                 ctx.shadowColor = root.dangerColor
                 ctx.beginPath()
                 ctx.arc(cx, cy, subRadius, subSplitRad, subEndRad, true)
-                ctx.lineWidth = 6
+                ctx.lineWidth = 4.5
                 ctx.strokeStyle = root.dangerColor
                 ctx.stroke()
                 ctx.restore()
@@ -336,20 +336,20 @@ Item {
             var dangerProgress = Math.max(0, Math.min(1,
                 (root.dangerStart - root.minValue) / (root.maxValue - root.minValue)))
             var normalEnd = Math.min(currentProgress, dangerProgress)
-            var colorIntensity = 0.3 + currentProgress * 0.7
+            var colorIntensity = 0.34 + currentProgress * 0.48
 
             drawGlowArc(0, normalEnd, root.accentColor,
-                        8, 15, colorIntensity)
+                        5, 10, colorIntensity)
             if (currentProgress > dangerProgress)
                 drawGlowArc(dangerProgress, currentProgress,
-                            root.dangerColor, 8, 16, colorIntensity)
+                            root.dangerColor, 5, 10, colorIntensity)
 
             // Dau cung sang hon tao cam giac anh sang dang chay.
             var headStart = Math.max(0, currentProgress - 0.055)
             var headColor = currentProgress > dangerProgress
-                            ? "#ffd0d5" : "#c9f2ff"
+                            ? "#efc6cb" : "#bddce8"
             drawGlowArc(headStart, currentProgress, headColor,
-                        3, 20, Math.min(1, colorIntensity + 0.2))
+                        2, 12, Math.min(0.92, colorIntensity + 0.1))
         }
     }
 
