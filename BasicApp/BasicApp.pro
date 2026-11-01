@@ -29,5 +29,26 @@ QML_DESIGNER_IMPORT_PATH =
 #qnx: target.path = /tmp/$${TARGET}/bin
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
-target.path = /home/pi/BasicApp/bin
+target.path = /home/ras/BasicApp/bin
 INSTALLS += target
+
+# Cấu hình Sysroot và Cross-Compiler chuẩn cho Pi 4 (aarch64)
+QMAKE_SYSROOT = /home/khanhne/rpi-qt/sysroot
+QMAKE_CC = /home/khanhne/rpi-qt/tools/cross-pi-gcc/bin/aarch64-linux-gnu-gcc
+QMAKE_CXX = /home/khanhne/rpi-qt/tools/cross-pi-gcc/bin/aarch64-linux-gnu-g++
+QMAKE_LINK = /home/khanhne/rpi-qt/tools/cross-pi-gcc/bin/aarch64-linux-gnu-g++
+
+# 1. Chỉ định thư mục tìm thư viện chính
+QMAKE_LIBDIR += $$QMAKE_SYSROOT/usr/lib/aarch64-linux-gnu
+QMAKE_LIBDIR += $$QMAKE_SYSROOT/lib/aarch64-linux-gnu
+QMAKE_LIBDIR += /home/khanhne/rpi-qt/qt5.15/lib
+
+# 2. Chỉ định thư mục tìm thư viện phụ thuộc ngầm
+QMAKE_LFLAGS += --sysroot=$$QMAKE_SYSROOT
+QMAKE_LFLAGS += -Wl,-rpath-link,$$QMAKE_SYSROOT/lib/aarch64-linux-gnu
+QMAKE_LFLAGS += -Wl,-rpath-link,$$QMAKE_SYSROOT/usr/lib/aarch64-linux-gnu
+QMAKE_LFLAGS += -Wl,-rpath-link,$$QMAKE_SYSROOT/usr/lib/aarch64-linux-gnu/mesa
+QMAKE_LFLAGS += -Wl,-rpath-link,/home/khanhne/rpi-qt/qt5.15/lib
+
+QMAKE_CFLAGS += --sysroot=$$QMAKE_SYSROOT
+QMAKE_CXXFLAGS += --sysroot=$$QMAKE_SYSROOT

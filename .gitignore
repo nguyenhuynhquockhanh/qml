@@ -5,3 +5,5 @@ version.txt
 Debug/
 .vs/
 build/
+build-*/
+*.pro.user*
