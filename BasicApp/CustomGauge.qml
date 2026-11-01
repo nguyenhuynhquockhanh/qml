@@ -166,7 +166,7 @@ Item {
                 var subRadius = radius - 38
                 var subStartAngle = -150
                 var subSweep = 60
-                var subSplitAngle = subStartAngle - subSweep * 0.78
+                var subSplitAngle = subStartAngle - subSweep * 0.88
                 var subEndAngle = subStartAngle - subSweep
                 var subStartRad = radians(subStartAngle)
                 var subSplitRad = radians(subSplitAngle)
