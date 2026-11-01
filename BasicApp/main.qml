@@ -64,7 +64,7 @@ Window {
         transformOrigin: Item.Center
         scale: Math.min(window.width / width, window.height / height)
 
-        // Nen ngoai va vung man hinh nam phia sau asset bezel that.
+        // Nen xanh-den phu toan man hinh, toa sang nhe tu tam cluster.
         Canvas {
             id: clusterBody
             anchors.fill: parent
@@ -73,40 +73,19 @@ Window {
 
             onAvailableChanged: if (available) requestPaint()
 
-            function innerPath(ctx) {
-                ctx.beginPath()
-                ctx.moveTo(260, 142)
-                ctx.bezierCurveTo(199, 143, 148, 174, 123, 235)
-                ctx.bezierCurveTo(96, 301, 109, 393, 159, 454)
-                ctx.bezierCurveTo(187, 487, 225, 498, 278, 499)
-                ctx.bezierCurveTo(358, 502, 436, 490, 512, 502)
-                ctx.bezierCurveTo(588, 490, 666, 502, 746, 499)
-                ctx.bezierCurveTo(800, 498, 838, 487, 865, 454)
-                ctx.bezierCurveTo(915, 393, 928, 301, 901, 235)
-                ctx.bezierCurveTo(876, 174, 825, 143, 764, 142)
-                ctx.closePath()
-            }
-
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.reset()
 
-                var outside = ctx.createLinearGradient(0, 0, 0, height)
-                outside.addColorStop(0.0, "#f4f6f8")
-                outside.addColorStop(0.62, "#e4e8ec")
-                outside.addColorStop(1.0, "#cbd2d8")
-                ctx.fillStyle = outside
-                ctx.fillRect(0, 0, width, height)
-
-                innerPath(ctx)
-                var display = ctx.createRadialGradient(515, 285, 25,
-                                                       515, 300, 535)
-                display.addColorStop(0.0, "#071a29")
-                display.addColorStop(0.38, "#03101a")
-                display.addColorStop(0.75, "#010509")
+                var display = ctx.createRadialGradient(512, 285, 12,
+                                                       512, 300, 630)
+                display.addColorStop(0.0, "#0a2b46")
+                display.addColorStop(0.28, "#071d30")
+                display.addColorStop(0.58, "#03101b")
+                display.addColorStop(0.82, "#01070c")
                 display.addColorStop(1.0, "#000204")
                 ctx.fillStyle = display
-                ctx.fill()
+                ctx.fillRect(0, 0, width, height)
             }
         }
 
@@ -114,10 +93,10 @@ Window {
         CustomGauge {
             id: speedGauge
             z: 2
-            x: 57
-            y: 118
-            width: 400
-            height: 400
+            x: 65
+            y: 128
+            width: 360
+            height: 360
             minValue: 0
             maxValue: 240
             majorStep: 20
@@ -141,10 +120,10 @@ Window {
         CustomGauge {
             id: rpmGauge
             z: 2
-            x: 644
-            y: 147
-            width: 334
-            height: 334
+            x: 619
+            y: 148
+            width: 320
+            height: 320
             minValue: 0
             maxValue: 8
             majorStep: 1
@@ -169,7 +148,7 @@ Window {
             id: topInformation
             z: 4
             x: 357
-            y: 148
+            y: 78
             width: 322
             height: 61
 
@@ -233,7 +212,7 @@ Window {
         Text {
             z: 4
             x: 430
-            y: 196
+            y: 145
             width: 170
             horizontalAlignment: Text.AlignHCenter
             text: window.driveMode
@@ -246,7 +225,7 @@ Window {
             id: rangeInformation
             z: 4
             x: 415
-            y: 226
+            y: 174
             width: 202
             height: 43
 
@@ -298,7 +277,7 @@ Window {
             id: roadScene
             z: 1
             x: 352
-            y: 264
+            y: 235
             width: 324
             height: 251
             renderTarget: Canvas.Image
@@ -373,7 +352,7 @@ Window {
             id: carPlaceholder
             z: 3
             x: 475
-            y: 349
+            y: 330
             width: 78
             height: 58
 
@@ -413,7 +392,7 @@ Window {
         Item {
             z: 4
             x: 423
-            y: 449
+            y: 455
             width: 184
             height: 36
 
@@ -448,7 +427,10 @@ Window {
         Image {
             id: clusterBezel
             z: 10
-            anchors.fill: parent
+            x: -24
+            y: -60
+            width: 1072
+            height: 720
             source: "images/cluster-bezel.png"
             fillMode: Image.Stretch
             smooth: true
