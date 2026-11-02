@@ -6,6 +6,14 @@ Window {
 
     readonly property real designWidth: 1024
     readonly property real designHeight: 600
+    readonly property real layoutScale: Math.min(width / designWidth,
+                                                  height / designHeight)
+    // Chi thay doi mat do texture, khong tham gia tinh x/y/width/height bo cuc.
+    readonly property real rasterScale: Math.max(1,
+                                                  Math.min(4,
+                                                      layoutScale
+                                                      * Screen.devicePixelRatio))
+    readonly property real detailRenderScale: Math.max(2, rasterScale)
 
     width: designWidth
     height: designHeight
@@ -62,20 +70,28 @@ Window {
         height: window.designHeight
         anchors.centerIn: parent
         transformOrigin: Item.Center
-        scale: Math.min(window.width / width, window.height / height)
+        scale: window.layoutScale
 
         // Nen xanh-den phu toan man hinh, toa sang nhe tu tam cluster.
         Canvas {
             id: clusterBody
-            anchors.fill: parent
+            x: 0
+            y: 0
+            width: designArea.width * window.rasterScale
+            height: designArea.height * window.rasterScale
+            scale: 1 / window.rasterScale
+            transformOrigin: Item.TopLeft
             renderTarget: Canvas.Image
             antialiasing: true
 
             onAvailableChanged: if (available) requestPaint()
+            onWidthChanged: requestPaint()
+            onHeightChanged: requestPaint()
 
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.reset()
+                ctx.scale(window.rasterScale, window.rasterScale)
 
                 var display = ctx.createRadialGradient(512, 285, 12,
                                                        512, 300, 630)
@@ -85,7 +101,7 @@ Window {
                 display.addColorStop(0.82, "#01070c")
                 display.addColorStop(1.0, "#000204")
                 ctx.fillStyle = display
-                ctx.fillRect(0, 0, width, height)
+                ctx.fillRect(0, 0, designArea.width, designArea.height)
             }
         }
 
@@ -108,6 +124,7 @@ Window {
             dangerColor: "#ff3558"
             dangerStart: 220
             displayDecimals: 0
+            outputScale: window.rasterScale
             showSubGauge: true
             subGaugeType: "fuel"
             subValue: 0.62
@@ -134,6 +151,7 @@ Window {
             dangerColor: "#ff3558"
             dangerStart: 6.5
             displayDecimals: 1
+            outputScale: window.rasterScale
             showSubGauge: true
             subGaugeType: "temperature"
             subValue: 0.48
@@ -230,14 +248,20 @@ Window {
             Canvas {
                 x: 0
                 y: 5
-                width: 39
-                height: 30
+                width: 39 * window.detailRenderScale
+                height: 30 * window.detailRenderScale
+                scale: 1 / window.detailRenderScale
+                transformOrigin: Item.TopLeft
                 antialiasing: true
 
                 onAvailableChanged: if (available) requestPaint()
+                onWidthChanged: requestPaint()
+                onHeightChanged: requestPaint()
                 onPaint: {
                     var ctx = getContext("2d")
                     ctx.reset()
+                    ctx.scale(window.detailRenderScale,
+                              window.detailRenderScale)
                     ctx.lineWidth = 2
                     ctx.strokeStyle = "#8ea8bb"
                     ctx.beginPath()
@@ -276,19 +300,22 @@ Window {
             z: 1
             x: 352
             y: 215
-            width: 640
-            height: 540
-            scale: 0.5
+            width: 320 * window.detailRenderScale
+            height: 270 * window.detailRenderScale
+            scale: 1 / window.detailRenderScale
             transformOrigin: Item.TopLeft
             renderTarget: Canvas.Image
             antialiasing: true
 
             onAvailableChanged: if (available) requestPaint()
+            onWidthChanged: requestPaint()
+            onHeightChanged: requestPaint()
 
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.reset()
-                ctx.scale(2, 2)
+                ctx.scale(window.detailRenderScale,
+                          window.detailRenderScale)
 
                 var w = 320
                 var h = 270
@@ -398,6 +425,7 @@ Window {
             y: 112
             pointsLeft: true
             active: true
+            renderScale: window.detailRenderScale
         }
 
         TurnIndicator {
@@ -406,6 +434,7 @@ Window {
             y: 112
             pointsLeft: false
             active: true
+            renderScale: window.detailRenderScale
         }
 
         // Cac den canh bao mo phong tu bo icon vector nguoi dung cung cap.

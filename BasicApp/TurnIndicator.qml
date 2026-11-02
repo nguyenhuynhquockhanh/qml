@@ -6,6 +6,7 @@ Item {
     property bool pointsLeft: true
     property bool active: true
     property color signalColor: "#49ef70"
+    property real renderScale: 2
     property real pulseOpacity: 1.0
 
     width: 48
@@ -14,19 +15,21 @@ Item {
 
     Canvas {
         id: iconCanvas
-        width: root.width * 2
-        height: root.height * 2
-        scale: 0.5
+        width: root.width * root.renderScale
+        height: root.height * root.renderScale
+        scale: 1 / root.renderScale
         transformOrigin: Item.TopLeft
         renderTarget: Canvas.Image
         antialiasing: true
 
         onAvailableChanged: if (available) requestPaint()
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
 
         onPaint: {
             var ctx = getContext("2d")
             ctx.reset()
-            ctx.scale(2, 2)
+            ctx.scale(root.renderScale, root.renderScale)
 
             if (!root.pointsLeft) {
                 ctx.translate(root.width, 0)

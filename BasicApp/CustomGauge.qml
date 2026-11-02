@@ -15,6 +15,7 @@ Item {
     property color dangerColor: "#ff3558"
     property real dangerStart: 220
     property int displayDecimals: 0
+    property real outputScale: 1
     property bool showSubGauge: false
     property string subGaugeType: "fuel"
     property real subValue: 0.5
@@ -27,8 +28,8 @@ Item {
                                      ? Math.max(0, Math.min(1,
                                          (value - minValue) / (maxValue - minValue)))
                                      : 0
-    // Render Canvas tinh o 3x roi thu ve kich thuoc that de tranh vo pixel.
-    readonly property real renderScale: 3
+    // Canvas tinh giu toi thieu 3x va tu tang theo mat do pixel dau ra.
+    readonly property real renderScale: Math.max(3, outputScale)
     readonly property real dialSize: Math.min(width, height)
     readonly property real dialRadius: dialSize / 2
     readonly property real faceRadius: dialRadius - dialSize * 0.035
@@ -45,7 +46,7 @@ Item {
     readonly property real arcHeadStart: Math.max(0, progress - 0.055)
     readonly property real dynamicArcOpacity: 0.28 + progress * 0.54
     readonly property real pathStartAngle: startAngle - 90
-    readonly property real arcRenderScale: 2
+    readonly property real arcRenderScale: Math.max(2, outputScale)
 
     function requestBackgroundPaint() {
         backgroundCanvas.requestPaint()
@@ -88,6 +89,8 @@ Item {
         antialiasing: true
 
         onAvailableChanged: if (available) requestPaint()
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
 
         onPaint: {
             var ctx = getContext("2d")
