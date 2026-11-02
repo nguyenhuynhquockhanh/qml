@@ -27,7 +27,8 @@ Item {
                                      ? Math.max(0, Math.min(1,
                                          (value - minValue) / (maxValue - minValue)))
                                      : 0
-    readonly property real renderScale: 2
+    // Render Canvas tinh o 3x roi thu ve kich thuoc that de tranh vo pixel.
+    readonly property real renderScale: 3
     readonly property real dialSize: Math.min(width, height)
     readonly property real dialRadius: dialSize / 2
     readonly property real faceRadius: dialRadius - dialSize * 0.035
