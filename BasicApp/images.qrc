@@ -4,6 +4,6 @@
         <file>images/sun.png</file>
         <file>images/white.png</file>
         <file>images/cluster-bezel.png</file>
-        <file>images/vehicle-display.png</file>
+        <file>images/vehicle-top.png</file>
     </qresource>
 </RCC>

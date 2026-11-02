@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import QtQuick.Shapes 1.15
 
 Item {
     id: root
@@ -14,7 +15,6 @@ Item {
     property color dangerColor: "#d8263d"
     property real dangerStart: 220
     property int displayDecimals: 0
-    property bool enableDynamicBlur: false
     property bool showSubGauge: false
     property string subGaugeType: "fuel"
     property real subValue: 0.5
@@ -29,6 +29,20 @@ Item {
                                      : 0
     readonly property real renderScale: 2
     readonly property real dialSize: Math.min(width, height)
+    readonly property real dialRadius: dialSize / 2
+    readonly property real faceRadius: dialRadius - dialSize * 0.055
+    readonly property real arcRadius: faceRadius - dialSize * 0.088
+    readonly property real dangerProgress: maxValue > minValue
+                                           ? Math.max(0, Math.min(1,
+                                               (dangerStart - minValue)
+                                               / (maxValue - minValue)))
+                                           : 1
+    readonly property real normalArcProgress: Math.min(progress, dangerProgress)
+    readonly property real dangerArcProgress: Math.max(0,
+                                                        progress - dangerProgress)
+    readonly property real arcHeadStart: Math.max(0, progress - 0.055)
+    readonly property real dynamicArcOpacity: 0.34 + progress * 0.48
+    readonly property real pathStartAngle: startAngle - 90
 
     function requestBackgroundPaint() {
         backgroundCanvas.requestPaint()
@@ -36,30 +50,23 @@ Item {
 
     onWidthChanged: {
         requestBackgroundPaint()
-        valueArcCanvas.requestPaint()
     }
     onHeightChanged: {
         requestBackgroundPaint()
-        valueArcCanvas.requestPaint()
     }
-    onProgressChanged: valueArcCanvas.requestPaint()
     onMinValueChanged: requestBackgroundPaint()
     onMaxValueChanged: requestBackgroundPaint()
     onMajorStepChanged: requestBackgroundPaint()
     onMinorTicksPerStepChanged: requestBackgroundPaint()
     onAccentColorChanged: {
         requestBackgroundPaint()
-        valueArcCanvas.requestPaint()
     }
     onDangerColorChanged: {
         requestBackgroundPaint()
-        valueArcCanvas.requestPaint()
     }
     onDangerStartChanged: {
         requestBackgroundPaint()
-        valueArcCanvas.requestPaint()
     }
-    onEnableDynamicBlurChanged: valueArcCanvas.requestPaint()
     onShowSubGaugeChanged: requestBackgroundPaint()
     onSubGaugeTypeChanged: requestBackgroundPaint()
     onSubValueChanged: requestBackgroundPaint()
@@ -68,8 +75,10 @@ Item {
 
     Canvas {
         id: backgroundCanvas
-        width: Math.ceil(root.width * root.renderScale)
-        height: Math.ceil(root.height * root.renderScale)
+        x: (root.width - root.dialSize) / 2
+        y: (root.height - root.dialSize) / 2
+        width: Math.ceil(root.dialSize * root.renderScale)
+        height: width
         scale: 1 / root.renderScale
         transformOrigin: Item.TopLeft
         renderTarget: Canvas.Image
@@ -82,9 +91,9 @@ Item {
             ctx.reset()
             ctx.scale(root.renderScale, root.renderScale)
 
-            var cx = root.width / 2
-            var cy = root.height / 2
-            var radius = root.dialSize / 2 - 18
+            var cx = root.dialRadius
+            var cy = root.dialRadius
+            var radius = root.faceRadius
             if (radius <= 60)
                 return
 
@@ -92,7 +101,7 @@ Item {
                 return (angle - 90) * Math.PI / 180
             }
 
-            var arcRadius = radius - 29
+            var arcRadius = root.arcRadius
             var startRad = radians(root.startAngle)
             var endRad = radians(root.startAngle + root.sweepAngle)
             var dangerFraction = Math.max(0, Math.min(1,
@@ -105,7 +114,7 @@ Item {
             ctx.strokeStyle = "#14232d"
             ctx.stroke()
 
-            // Vung redline co dinh; cung gia tri dong se duoc ve o Canvas rieng.
+            // Vung redline co dinh; cung gia tri dong duoc ve o lop Shape rieng.
             ctx.save()
             ctx.shadowBlur = 3
             ctx.shadowColor = root.dangerColor
@@ -130,8 +139,9 @@ Item {
                 var cosA = Math.cos(rad)
                 var sinA = Math.sin(rad)
                 var isMajor = i % root.minorTicksPerStep === 0
-                var tickOuter = radius - 38
-                var tickInner = tickOuter - (isMajor ? 20 : 10)
+                var tickOuter = radius - root.dialSize * 0.115
+                var tickInner = tickOuter
+                                - root.dialSize * (isMajor ? 0.055 : 0.029)
                 var tickValue = root.minValue + fraction * range
                 var isDanger = tickValue >= root.dangerStart
 
@@ -144,10 +154,11 @@ Item {
                 ctx.stroke()
 
                 if (isMajor) {
-                    var labelRadius = radius - 77
+                    var labelRadius = radius - root.dialSize * 0.188
                     var labelValue = root.minValue + (i / totalTicks) * range
                     ctx.fillStyle = "#eef5fa"
-                    ctx.font = "17px sans-serif"
+                    ctx.font = Math.round(root.dialSize * 0.045)
+                               + "px sans-serif"
                     ctx.fillText(Math.round(labelValue).toString(),
                                  cx + labelRadius * cosA,
                                  cy + labelRadius * sinA)
@@ -155,7 +166,7 @@ Item {
             }
 
             if (root.showSubGauge) {
-                var subRadius = radius - 38
+                var subRadius = radius - root.dialSize * 0.115
                 var subStartAngle = -150
                 var subSweep = 60
                 var subSplitAngle = subStartAngle - subSweep * 0.88
@@ -204,10 +215,11 @@ Item {
                 }
 
                 // E/F hoac C/H o hai dau cung.
-                var labelRadius = subRadius - 24
+                var labelRadius = subRadius - root.dialSize * 0.073
                 var minRad = radians(subStartAngle)
                 var maxRad = radians(subEndAngle)
-                ctx.font = "bold 16px sans-serif"
+                ctx.font = "bold " + Math.round(root.dialSize * 0.043)
+                           + "px sans-serif"
                 ctx.fillStyle = "#dce8f1"
                 ctx.textAlign = "center"
                 ctx.textBaseline = "middle"
@@ -225,7 +237,8 @@ Item {
                 var indicatorX = cx + subRadius * Math.cos(indicatorRad)
                 var indicatorY = cy + subRadius * Math.sin(indicatorRad)
                 ctx.beginPath()
-                ctx.arc(indicatorX, indicatorY, 5, 0, Math.PI * 2)
+                ctx.arc(indicatorX, indicatorY,
+                        root.dialSize * 0.015, 0, Math.PI * 2)
                 ctx.fillStyle = "#ffffff"
                 ctx.fill()
                 ctx.lineWidth = 2
@@ -234,7 +247,7 @@ Item {
 
                 // Bieu tuong nhien lieu hoac nhiet do dong co.
                 var iconX = cx
-                var iconY = cy + radius - 76
+                var iconY = cy + radius - root.dialSize * 0.23
                 ctx.lineWidth = 2
                 ctx.strokeStyle = "#dce8f1"
                 ctx.fillStyle = "#dce8f1"
@@ -275,73 +288,82 @@ Item {
         }
     }
 
-    // Cung sang thay cho kim, chay quanh mat so theo gia tri hien tai.
-    Canvas {
-        id: valueArcCanvas
+    // Cung gia tri duoc tessellate boi scene graph. Khong con Canvas JavaScript
+    // repaint moi frame, nen duong cong net hon va on dinh hon tren Raspberry Pi.
+    Item {
+        id: dynamicArcLayer
+        x: (root.width - root.dialSize) / 2
+        y: (root.height - root.dialSize) / 2
         width: root.dialSize
         height: width
-        anchors.centerIn: parent
-        renderTarget: Canvas.Image
         antialiasing: true
 
-        onAvailableChanged: if (available) requestPaint()
-        onWidthChanged: requestPaint()
-        onHeightChanged: requestPaint()
+        Shape {
+            anchors.fill: parent
+            opacity: root.dynamicArcOpacity
 
-        onPaint: {
-            var ctx = getContext("2d")
-            ctx.reset()
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: root.normalArcProgress > 0
+                             ? root.accentColor : "transparent"
+                strokeWidth: 5
+                capStyle: ShapePath.RoundCap
 
-            var cx = width / 2
-            var cy = height / 2
-            var radius = width / 2 - 18
-            var arcRadius = radius - 29
-            var currentProgress = root.progress
-            if (radius <= 60 || currentProgress <= 0)
-                return
-
-            function radians(angle) {
-                return (angle - 90) * Math.PI / 180
+                PathAngleArc {
+                    centerX: root.dialRadius
+                    centerY: root.dialRadius
+                    radiusX: root.arcRadius
+                    radiusY: root.arcRadius
+                    startAngle: root.pathStartAngle
+                    sweepAngle: root.normalArcProgress * root.sweepAngle
+                    moveToStart: true
+                }
             }
 
-            function drawGlowArc(fromProgress, toProgress, color,
-                                 lineWidth, blur, opacity) {
-                if (toProgress <= fromProgress)
-                    return
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: root.dangerArcProgress > 0
+                             ? root.dangerColor : "transparent"
+                strokeWidth: 5
+                capStyle: ShapePath.RoundCap
 
-                var fromAngle = root.startAngle + fromProgress * root.sweepAngle
-                var toAngle = root.startAngle + toProgress * root.sweepAngle
-                ctx.save()
-                ctx.lineCap = "round"
-                ctx.globalAlpha = opacity
-                ctx.shadowBlur = root.enableDynamicBlur ? blur : 0
-                ctx.shadowColor = color
-                ctx.beginPath()
-                ctx.arc(cx, cy, arcRadius,
-                        radians(fromAngle), radians(toAngle))
-                ctx.lineWidth = lineWidth
-                ctx.strokeStyle = color
-                ctx.stroke()
-                ctx.restore()
+                PathAngleArc {
+                    centerX: root.dialRadius
+                    centerY: root.dialRadius
+                    radiusX: root.arcRadius
+                    radiusY: root.arcRadius
+                    startAngle: root.pathStartAngle
+                                + root.dangerProgress * root.sweepAngle
+                    sweepAngle: root.dangerArcProgress * root.sweepAngle
+                    moveToStart: true
+                }
             }
+        }
 
-            var dangerProgress = Math.max(0, Math.min(1,
-                (root.dangerStart - root.minValue) / (root.maxValue - root.minValue)))
-            var normalEnd = Math.min(currentProgress, dangerProgress)
-            var colorIntensity = 0.34 + currentProgress * 0.48
+        // Dau cung sang hon tao cam giac dai anh sang dang chay.
+        Shape {
+            anchors.fill: parent
+            opacity: Math.min(0.92, root.dynamicArcOpacity + 0.1)
 
-            drawGlowArc(0, normalEnd, root.accentColor,
-                        5, 10, colorIntensity)
-            if (currentProgress > dangerProgress)
-                drawGlowArc(dangerProgress, currentProgress,
-                            root.dangerColor, 5, 10, colorIntensity)
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: root.progress > root.dangerProgress
+                             ? "#efc6cb" : "#bddce8"
+                strokeWidth: 2
+                capStyle: ShapePath.RoundCap
 
-            // Dau cung sang hon tao cam giac anh sang dang chay.
-            var headStart = Math.max(0, currentProgress - 0.055)
-            var headColor = currentProgress > dangerProgress
-                            ? "#efc6cb" : "#bddce8"
-            drawGlowArc(headStart, currentProgress, headColor,
-                        2, 12, Math.min(0.92, colorIntensity + 0.1))
+                PathAngleArc {
+                    centerX: root.dialRadius
+                    centerY: root.dialRadius
+                    radiusX: root.arcRadius
+                    radiusY: root.arcRadius
+                    startAngle: root.pathStartAngle
+                                + root.arcHeadStart * root.sweepAngle
+                    sweepAngle: (root.progress - root.arcHeadStart)
+                                * root.sweepAngle
+                    moveToStart: true
+                }
+            }
         }
     }
 
@@ -355,16 +377,16 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             text: Number(root.value).toFixed(root.displayDecimals)
             color: "#f7fbff"
-            font.pixelSize: root.dialSize * 0.16
-            font.weight: Font.Bold
+            font.pixelSize: root.dialSize * 0.15
+            font.weight: Font.DemiBold
         }
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.unitText
             color: "#9aabb8"
-            font.pixelSize: root.dialSize * 0.032
-            font.letterSpacing: 0.8
+            font.pixelSize: root.dialSize * 0.038
+            font.letterSpacing: 0.6
         }
     }
 

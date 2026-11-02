@@ -13,16 +13,13 @@ Window {
     title: "Instrument Cluster"
     color: "#e8ecef"
 
-    property real speedVal: 90
+    property real speedVal: 0
     readonly property real rpmVal: speedVal / 30
-    property bool increasing: true
-    property real speedVelocity: 0
     property date currentDateTime: new Date()
     property int ambientTemperature: 20
-    property string driveMode: "BMW 540i"
+    property string driveMode: "Driving"
     property int remainingRange: 450
     property int odometer: 12580
-    property bool enableGaugeBlur: false
 
     Timer {
         interval: 1000
@@ -31,29 +28,32 @@ Window {
         onTriggered: window.currentDateTime = new Date()
     }
 
-    // Du lieu mo phong, tach khoi qua trinh ve de animation luon on dinh.
-    Timer {
-        interval: 16
+    // Animation native, tranh cap phat JavaScript moi 16 ms tren Qt 5/Pi.
+    SequentialAnimation {
         running: true
-        repeat: true
+        loops: Animation.Infinite
 
-        onTriggered: {
-            if (increasing) {
-                speedVelocity = Math.min(1.35, speedVelocity + 0.014)
-                speedVal = Math.min(240, speedVal + speedVelocity)
-                if (speedVal >= 240) {
-                    increasing = false
-                    speedVelocity = 0
-                }
-            } else {
-                speedVelocity = Math.min(1.55, speedVelocity + 0.017)
-                speedVal = Math.max(0, speedVal - speedVelocity)
-                if (speedVal <= 0) {
-                    increasing = true
-                    speedVelocity = 0
-                }
-            }
+        NumberAnimation {
+            target: window
+            property: "speedVal"
+            from: 0
+            to: 240
+            duration: 9000
+            easing.type: Easing.InOutSine
         }
+
+        PauseAnimation { duration: 350 }
+
+        NumberAnimation {
+            target: window
+            property: "speedVal"
+            from: 240
+            to: 0
+            duration: 8000
+            easing.type: Easing.InOutSine
+        }
+
+        PauseAnimation { duration: 350 }
     }
 
     Item {
@@ -93,10 +93,10 @@ Window {
         CustomGauge {
             id: speedGauge
             z: 2
-            x: 65
-            y: 128
-            width: 360
-            height: 360
+            x: 80
+            y: 135
+            width: 330
+            height: 330
             minValue: 0
             maxValue: 240
             majorStep: 20
@@ -108,7 +108,6 @@ Window {
             dangerColor: "#d8263d"
             dangerStart: 220
             displayDecimals: 0
-            enableDynamicBlur: window.enableGaugeBlur
             showSubGauge: true
             subGaugeType: "fuel"
             subValue: 0.62
@@ -120,10 +119,10 @@ Window {
         CustomGauge {
             id: rpmGauge
             z: 2
-            x: 619
-            y: 148
-            width: 320
-            height: 320
+            x: 614
+            y: 135
+            width: 330
+            height: 330
             minValue: 0
             maxValue: 8
             majorStep: 1
@@ -135,7 +134,6 @@ Window {
             dangerColor: "#d8263d"
             dangerStart: 6.5
             displayDecimals: 1
-            enableDynamicBlur: window.enableGaugeBlur
             showSubGauge: true
             subGaugeType: "temperature"
             subValue: 0.48
@@ -147,22 +145,22 @@ Window {
         Item {
             id: topInformation
             z: 4
-            x: 357
-            y: 78
-            width: 322
+            x: 352
+            y: 120
+            width: 320
             height: 61
 
             Column {
                 x: 0
                 y: 1
-                width: 98
+                width: 100
                 spacing: -1
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: Qt.formatTime(window.currentDateTime, "hh:mm AP")
                     color: "#e9f0f5"
-                    font.pixelSize: 18
+                    font.pixelSize: 17
                     font.weight: Font.Medium
                 }
 
@@ -177,28 +175,28 @@ Window {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: -5
+                y: -4
                 text: "D"
                 color: "#f8fbfd"
-                font.pixelSize: 31
+                font.pixelSize: 30
                 font.weight: Font.Medium
             }
 
             Text {
-                x: 238
+                x: 220
                 y: 1
-                width: 84
+                width: 100
                 horizontalAlignment: Text.AlignHCenter
                 text: window.ambientTemperature + "\u00b0C"
                 color: "#e9f0f5"
-                font.pixelSize: 18
+                font.pixelSize: 17
                 font.weight: Font.Medium
             }
 
             Rectangle {
-                x: 82
+                x: 80
                 y: 42
-                width: 158
+                width: 160
                 height: 1
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
@@ -212,12 +210,12 @@ Window {
         Text {
             z: 4
             x: 430
-            y: 145
+            y: 176
             width: 170
             horizontalAlignment: Text.AlignHCenter
             text: window.driveMode
             color: "#dbe6ed"
-            font.pixelSize: 18
+            font.pixelSize: 17
             font.weight: Font.Medium
         }
 
@@ -225,7 +223,7 @@ Window {
             id: rangeInformation
             z: 4
             x: 415
-            y: 174
+            y: 201
             width: 202
             height: 43
 
@@ -256,10 +254,10 @@ Window {
 
             Text {
                 x: 42
-                y: -2
+                y: -1
                 text: window.remainingRange
                 color: "#e7eef3"
-                font.pixelSize: 30
+                font.pixelSize: 29
                 font.weight: Font.Medium
             }
 
@@ -268,80 +266,155 @@ Window {
                 y: 11
                 text: "km"
                 color: "#aabac5"
-                font.pixelSize: 15
+                font.pixelSize: 14
             }
         }
 
-        // Xe trung bay: anh that tren be sang va bong do tinh.
-        Item {
-            id: vehicleShowcase
+        // Lan duong phoi canh, ve mot lan o 2x de sac net tren man hinh Pi.
+        Canvas {
+            id: roadScene
             z: 1
-            x: 367
-            y: 235
-            width: 290
-            height: 190
+            x: 352
+            y: 215
+            width: 640
+            height: 540
+            scale: 0.5
+            transformOrigin: Item.TopLeft
+            renderTarget: Canvas.Image
+            antialiasing: true
 
-            Rectangle {
-                x: 40
-                y: 30
-                width: 210
-                height: 128
-                radius: 64
-                color: "#0b3958"
-                opacity: 0.16
+            onAvailableChanged: if (available) requestPaint()
+
+            onPaint: {
+                var ctx = getContext("2d")
+                ctx.reset()
+                ctx.scale(2, 2)
+
+                var w = 320
+                var h = 270
+                var horizonY = 48
+
+                var sky = ctx.createLinearGradient(0, 0, 0, 132)
+                sky.addColorStop(0.0, "rgba(7,39,63,0)")
+                sky.addColorStop(0.58, "rgba(8,48,78,0.72)")
+                sky.addColorStop(1.0, "rgba(3,16,27,0.08)")
+                ctx.fillStyle = sky
+                ctx.fillRect(0, 0, w, 132)
+
+                var road = ctx.createLinearGradient(0, horizonY, 0, h)
+                road.addColorStop(0.0, "rgba(7,23,34,0.78)")
+                road.addColorStop(1.0, "rgba(0,3,5,0.96)")
+                ctx.beginPath()
+                ctx.moveTo(150, horizonY)
+                ctx.lineTo(170, horizonY)
+                ctx.lineTo(314, h)
+                ctx.lineTo(6, h)
+                ctx.closePath()
+                ctx.fillStyle = road
+                ctx.fill()
+
+                var edge = ctx.createLinearGradient(0, horizonY, 0, h)
+                edge.addColorStop(0.0, "#607f92")
+                edge.addColorStop(1.0, "#e6f3fa")
+                ctx.lineWidth = 2.2
+                ctx.strokeStyle = edge
+                ctx.beginPath()
+                ctx.moveTo(150, horizonY)
+                ctx.lineTo(6, h)
+                ctx.moveTo(170, horizonY)
+                ctx.lineTo(314, h)
+                ctx.stroke()
+
+                ctx.lineWidth = 1.1
+                ctx.strokeStyle = "rgba(32,142,201,0.78)"
+                ctx.beginPath()
+                ctx.moveTo(156, horizonY + 4)
+                ctx.lineTo(86, h)
+                ctx.moveTo(164, horizonY + 4)
+                ctx.lineTo(234, h)
+                ctx.stroke()
+
+                ctx.setLineDash([12, 12])
+                ctx.lineWidth = 1.4
+                ctx.strokeStyle = "rgba(219,235,244,0.72)"
+                ctx.beginPath()
+                ctx.moveTo(160, horizonY + 14)
+                ctx.lineTo(160, h)
+                ctx.stroke()
+                ctx.setLineDash([])
             }
+        }
+
+        Item {
+            id: drivingVehicle
+            z: 3
+            x: 484
+            y: 332
+            width: 56
+            height: 102
 
             Rectangle {
-                x: 18
-                y: 148
-                width: 254
-                height: 28
-                radius: 14
-                color: "#000000"
-                opacity: 0.27
-            }
-
-            Rectangle {
-                x: 40
-                y: 154
-                width: 210
-                height: 16
+                x: 7
+                y: 83
+                width: 42
+                height: 15
                 radius: 8
-                color: "#020405"
-                opacity: 0.56
-            }
-
-            Rectangle {
-                x: 55
-                y: 160
-                width: 180
-                height: 2
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: "#00121e" }
-                    GradientStop { position: 0.5; color: "#2aa4df" }
-                    GradientStop { position: 1.0; color: "#00121e" }
-                }
-                opacity: 0.72
+                color: "#000000"
+                opacity: 0.42
             }
 
             Image {
-                id: displayVehicle
-                x: 0
-                y: 0
-                width: 290
-                height: 148
-                source: "images/vehicle-display.png"
+                anchors.fill: parent
+                source: "images/vehicle-top.png"
                 fillMode: Image.PreserveAspectFit
                 smooth: true
                 mipmap: true
             }
         }
 
+        Text {
+            z: 11
+            x: 306
+            y: 112
+            width: 30
+            text: "\u25c0"
+            horizontalAlignment: Text.AlignHCenter
+            color: "#42df53"
+            opacity: 0.22
+            font.pixelSize: 20
+            font.bold: true
+        }
+
+        Text {
+            z: 11
+            x: 688
+            y: 112
+            width: 30
+            text: "\u25b6"
+            horizontalAlignment: Text.AlignHCenter
+            color: "#42df53"
+            font.pixelSize: 20
+            font.bold: true
+
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
+                NumberAnimation {
+                    from: 1.0
+                    to: 0.22
+                    duration: 360
+                }
+                NumberAnimation {
+                    from: 0.22
+                    to: 1.0
+                    duration: 360
+                }
+            }
+        }
+
         Item {
             z: 4
             x: 423
-            y: 455
+            y: 450
             width: 184
             height: 36
 
@@ -356,10 +429,10 @@ Window {
 
             Text {
                 x: 38
-                y: 0
+                y: 1
                 text: window.odometer
                 color: "#eef3f6"
-                font.pixelSize: 24
+                font.pixelSize: 23
                 font.weight: Font.Medium
             }
 
@@ -372,16 +445,17 @@ Window {
             }
         }
 
-        // Asset bezel that thay hoan toan Canvas vien cu.
+        // Vien 2:1 duoc phong theo chieu ngang va giu nguyen ti le anh.
+        // Phan vien that nam can giua o khoang y=73..523 tren canvas 1024x600.
         Image {
             id: clusterBezel
-            z: 10
-            x: -24
-            y: -60
-            width: 1072
-            height: 720
+            z: 15
+            x: -34
+            y: 27
+            width: 1092
+            height: 546
             source: "images/cluster-bezel.png"
-            fillMode: Image.Stretch
+            fillMode: Image.PreserveAspectFit
             smooth: true
             mipmap: true
         }
