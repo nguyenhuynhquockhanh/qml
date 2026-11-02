@@ -45,6 +45,7 @@ Item {
     readonly property real arcHeadStart: Math.max(0, progress - 0.055)
     readonly property real dynamicArcOpacity: 0.28 + progress * 0.54
     readonly property real pathStartAngle: startAngle - 90
+    readonly property real arcRenderScale: 2
 
     function requestBackgroundPaint() {
         backgroundCanvas.requestPaint()
@@ -281,6 +282,14 @@ Item {
         width: root.dialSize
         height: width
         antialiasing: true
+
+        // Shape duoc render vao texture 2x va thu ve kich thuoc that.
+        // Day la supersampling rieng cho vong sang, tach voi backgroundCanvas.
+        layer.enabled: true
+        layer.smooth: true
+        layer.samples: 4
+        layer.textureSize: Qt.size(Math.ceil(width * root.arcRenderScale),
+                                   Math.ceil(height * root.arcRenderScale))
 
         Shape {
             anchors.fill: parent
