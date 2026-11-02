@@ -5,5 +5,6 @@
         <file>images/white.png</file>
         <file>images/cluster-bezel.png</file>
         <file>images/vehicle-top.png</file>
+        <file>images/dashboard-icons.png</file>
     </qresource>
 </RCC>

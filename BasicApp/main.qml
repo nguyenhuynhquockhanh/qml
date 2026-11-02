@@ -93,10 +93,10 @@ Window {
         CustomGauge {
             id: speedGauge
             z: 2
-            x: 80
-            y: 135
-            width: 330
-            height: 330
+            x: 72
+            y: 128
+            width: 344
+            height: 344
             minValue: 0
             maxValue: 240
             majorStep: 20
@@ -104,8 +104,8 @@ Window {
             value: window.speedVal
             titleText: ""
             unitText: "km/h"
-            accentColor: "#2e92bf"
-            dangerColor: "#d8263d"
+            accentColor: "#35bde9"
+            dangerColor: "#ff3558"
             dangerStart: 220
             displayDecimals: 0
             showSubGauge: true
@@ -115,14 +115,14 @@ Window {
             subMaxText: "F"
         }
 
-        // Dong ho vong tua nho hon, dung ti le nhu anh tham chieu.
+        // Dong ho vong tua cung kich thuoc va doi xung voi dong ho toc do.
         CustomGauge {
             id: rpmGauge
             z: 2
-            x: 614
-            y: 135
-            width: 330
-            height: 330
+            x: 608
+            y: 128
+            width: 344
+            height: 344
             minValue: 0
             maxValue: 8
             majorStep: 1
@@ -130,8 +130,8 @@ Window {
             value: window.rpmVal
             titleText: ""
             unitText: "x1000 rpm"
-            accentColor: "#2e92bf"
-            dangerColor: "#d8263d"
+            accentColor: "#35bde9"
+            dangerColor: "#ff3558"
             dangerStart: 6.5
             displayDecimals: 1
             showSubGauge: true
@@ -313,16 +313,36 @@ Window {
                 ctx.fillStyle = road
                 ctx.fill()
 
+                function drawRoadEdges() {
+                    ctx.beginPath()
+                    ctx.moveTo(150, horizonY)
+                    ctx.lineTo(6, h)
+                    ctx.moveTo(170, horizonY)
+                    ctx.lineTo(314, h)
+                }
+
+                // Halo xanh rong tao cam giac be mat kim loai phan chieu.
+                ctx.save()
+                ctx.shadowBlur = 11
+                ctx.shadowColor = "#35bde9"
+                ctx.lineWidth = 7
+                ctx.strokeStyle = "rgba(36,157,216,0.22)"
+                drawRoadEdges()
+                ctx.stroke()
+                ctx.restore()
+
                 var edge = ctx.createLinearGradient(0, horizonY, 0, h)
-                edge.addColorStop(0.0, "#607f92")
-                edge.addColorStop(1.0, "#e6f3fa")
-                ctx.lineWidth = 2.2
+                edge.addColorStop(0.0, "#356f91")
+                edge.addColorStop(0.55, "#87d8f5")
+                edge.addColorStop(1.0, "#f0fbff")
+                ctx.lineWidth = 2.7
                 ctx.strokeStyle = edge
-                ctx.beginPath()
-                ctx.moveTo(150, horizonY)
-                ctx.lineTo(6, h)
-                ctx.moveTo(170, horizonY)
-                ctx.lineTo(314, h)
+                drawRoadEdges()
+                ctx.stroke()
+
+                ctx.lineWidth = 0.8
+                ctx.strokeStyle = "rgba(240,252,255,0.95)"
+                drawRoadEdges()
                 ctx.stroke()
 
                 ctx.lineWidth = 1.1
@@ -372,41 +392,52 @@ Window {
             }
         }
 
-        Text {
-            z: 11
-            x: 306
+        TurnIndicator {
+            z: 16
+            x: 297
             y: 112
-            width: 30
-            text: "\u25c0"
-            horizontalAlignment: Text.AlignHCenter
-            color: "#42df53"
-            opacity: 0.22
-            font.pixelSize: 20
-            font.bold: true
+            pointsLeft: true
+            active: true
         }
 
-        Text {
-            z: 11
-            x: 688
+        TurnIndicator {
+            z: 16
+            x: 679
             y: 112
-            width: 30
-            text: "\u25b6"
-            horizontalAlignment: Text.AlignHCenter
-            color: "#42df53"
-            font.pixelSize: 20
-            font.bold: true
+            pointsLeft: false
+            active: true
+        }
 
-            SequentialAnimation on opacity {
-                loops: Animation.Infinite
-                NumberAnimation {
-                    from: 1.0
-                    to: 0.22
-                    duration: 360
-                }
-                NumberAnimation {
-                    from: 0.22
-                    to: 1.0
-                    duration: 360
+        // Cac den canh bao mo phong tu bo icon vector nguoi dung cung cap.
+        Item {
+            id: warningIndicators
+            z: 4
+            anchors.fill: parent
+
+            Repeater {
+                model: [
+                    { px: 65, py: 224, cx: 430, cy: 510, cw: 100, ch: 84 },
+                    { px: 65, py: 258, cx: 430, cy: 610, cw: 105, ch: 90 },
+                    { px: 65, py: 292, cx: 320, cy: 710, cw: 105, ch: 92 },
+                    { px: 65, py: 326, cx: 660, cy: 920, cw: 105, ch: 92 },
+                    { px: 937, py: 224, cx: 1080, cy: 610, cw: 105, ch: 90 },
+                    { px: 937, py: 258, cx: 650, cy: 710, cw: 105, ch: 92 },
+                    { px: 937, py: 292, cx: 545, cy: 920, cw: 105, ch: 92 },
+                    { px: 937, py: 326, cx: 760, cy: 920, cw: 105, ch: 92 }
+                ]
+
+                delegate: Image {
+                    x: modelData.px
+                    y: modelData.py
+                    width: 22
+                    height: 22
+                    source: "images/dashboard-icons.png"
+                    sourceClipRect: Qt.rect(modelData.cx, modelData.cy,
+                                            modelData.cw, modelData.ch)
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    mipmap: true
+                    opacity: 0.78
                 }
             }
         }

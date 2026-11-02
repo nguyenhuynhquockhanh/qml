@@ -11,8 +11,8 @@ Item {
     property int minorTicksPerStep: 4
     property string titleText: "SPEED"
     property string unitText: "km/h"
-    property color accentColor: "#2e92bf"
-    property color dangerColor: "#d8263d"
+    property color accentColor: "#35bde9"
+    property color dangerColor: "#ff3558"
     property real dangerStart: 220
     property int displayDecimals: 0
     property bool showSubGauge: false
@@ -30,8 +30,9 @@ Item {
     readonly property real renderScale: 2
     readonly property real dialSize: Math.min(width, height)
     readonly property real dialRadius: dialSize / 2
-    readonly property real faceRadius: dialRadius - dialSize * 0.055
-    readonly property real arcRadius: faceRadius - dialSize * 0.088
+    readonly property real faceRadius: dialRadius - dialSize * 0.035
+    // Luong sang dung chung ban kinh voi dau ngoai cua cac vach chia.
+    readonly property real arcRadius: faceRadius - dialSize * 0.075
     readonly property real dangerProgress: maxValue > minValue
                                            ? Math.max(0, Math.min(1,
                                                (dangerStart - minValue)
@@ -41,7 +42,7 @@ Item {
     readonly property real dangerArcProgress: Math.max(0,
                                                         progress - dangerProgress)
     readonly property real arcHeadStart: Math.max(0, progress - 0.055)
-    readonly property real dynamicArcOpacity: 0.34 + progress * 0.48
+    readonly property real dynamicArcOpacity: 0.28 + progress * 0.54
     readonly property real pathStartAngle: startAngle - 90
 
     function requestBackgroundPaint() {
@@ -104,26 +105,11 @@ Item {
             var arcRadius = root.arcRadius
             var startRad = radians(root.startAngle)
             var endRad = radians(root.startAngle + root.sweepAngle)
-            var dangerFraction = Math.max(0, Math.min(1,
-                (root.dangerStart - root.minValue) / (root.maxValue - root.minValue)))
-            var dangerRad = radians(root.startAngle + dangerFraction * root.sweepAngle)
-
             ctx.beginPath()
             ctx.arc(cx, cy, arcRadius, startRad, endRad)
-            ctx.lineWidth = 4
-            ctx.strokeStyle = "#14232d"
+            ctx.lineWidth = 1.2
+            ctx.strokeStyle = "#1a3341"
             ctx.stroke()
-
-            // Vung redline co dinh; cung gia tri dong duoc ve o lop Shape rieng.
-            ctx.save()
-            ctx.shadowBlur = 3
-            ctx.shadowColor = root.dangerColor
-            ctx.beginPath()
-            ctx.arc(cx, cy, arcRadius, dangerRad, endRad)
-            ctx.lineWidth = 3.5
-            ctx.strokeStyle = root.dangerColor
-            ctx.stroke()
-            ctx.restore()
 
             var range = root.maxValue - root.minValue
             var majorCount = Math.max(1, Math.round(range / root.majorStep))
@@ -139,25 +125,22 @@ Item {
                 var cosA = Math.cos(rad)
                 var sinA = Math.sin(rad)
                 var isMajor = i % root.minorTicksPerStep === 0
-                var tickOuter = radius - root.dialSize * 0.115
+                var tickOuter = root.arcRadius
                 var tickInner = tickOuter
-                                - root.dialSize * (isMajor ? 0.055 : 0.029)
-                var tickValue = root.minValue + fraction * range
-                var isDanger = tickValue >= root.dangerStart
+                                - root.dialSize * (isMajor ? 0.045 : 0.025)
 
                 ctx.beginPath()
                 ctx.moveTo(cx + tickOuter * cosA, cy + tickOuter * sinA)
                 ctx.lineTo(cx + tickInner * cosA, cy + tickInner * sinA)
-                ctx.lineWidth = isMajor ? 2.4 : 1.1
-                ctx.strokeStyle = isDanger ? root.dangerColor
-                                           : (isMajor ? "#f2f7fb" : "#7e8d9b")
+                ctx.lineWidth = isMajor ? 1.7 : 0.75
+                ctx.strokeStyle = isMajor ? "#e9f2f7" : "#6e8290"
                 ctx.stroke()
 
                 if (isMajor) {
-                    var labelRadius = radius - root.dialSize * 0.188
+                    var labelRadius = root.arcRadius - root.dialSize * 0.12
                     var labelValue = root.minValue + (i / totalTicks) * range
                     ctx.fillStyle = "#eef5fa"
-                    ctx.font = Math.round(root.dialSize * 0.045)
+                    ctx.font = Math.round(root.dialSize * 0.04)
                                + "px sans-serif"
                     ctx.fillText(Math.round(labelValue).toString(),
                                  cx + labelRadius * cosA,
@@ -166,7 +149,7 @@ Item {
             }
 
             if (root.showSubGauge) {
-                var subRadius = radius - root.dialSize * 0.115
+                var subRadius = root.arcRadius
                 var subStartAngle = -150
                 var subSweep = 60
                 var subSplitAngle = subStartAngle - subSweep * 0.88
@@ -181,7 +164,7 @@ Item {
                 ctx.shadowColor = root.accentColor
                 ctx.beginPath()
                 ctx.arc(cx, cy, subRadius, subStartRad, subSplitRad, true)
-                ctx.lineWidth = 4.5
+                ctx.lineWidth = 3.2
                 ctx.strokeStyle = root.accentColor
                 ctx.stroke()
                 ctx.restore()
@@ -191,7 +174,7 @@ Item {
                 ctx.shadowColor = root.dangerColor
                 ctx.beginPath()
                 ctx.arc(cx, cy, subRadius, subSplitRad, subEndRad, true)
-                ctx.lineWidth = 4.5
+                ctx.lineWidth = 3.2
                 ctx.strokeStyle = root.dangerColor
                 ctx.stroke()
                 ctx.restore()
@@ -209,7 +192,7 @@ Item {
                                cy + (subRadius + 6) * subSin)
                     ctx.lineTo(cx + (subRadius - 5) * subCos,
                                cy + (subRadius - 5) * subSin)
-                    ctx.lineWidth = 1.5
+                    ctx.lineWidth = 1.0
                     ctx.strokeStyle = j >= 5 ? root.dangerColor : "#dce8f1"
                     ctx.stroke()
                 }
@@ -218,7 +201,7 @@ Item {
                 var labelRadius = subRadius - root.dialSize * 0.073
                 var minRad = radians(subStartAngle)
                 var maxRad = radians(subEndAngle)
-                ctx.font = "bold " + Math.round(root.dialSize * 0.043)
+                ctx.font = "normal " + Math.round(root.dialSize * 0.04)
                            + "px sans-serif"
                 ctx.fillStyle = "#dce8f1"
                 ctx.textAlign = "center"
@@ -300,13 +283,13 @@ Item {
 
         Shape {
             anchors.fill: parent
-            opacity: root.dynamicArcOpacity
+            opacity: 0.10 + root.progress * 0.20
 
             ShapePath {
                 fillColor: "transparent"
                 strokeColor: root.normalArcProgress > 0
                              ? root.accentColor : "transparent"
-                strokeWidth: 5
+                strokeWidth: root.dialSize * 0.032
                 capStyle: ShapePath.RoundCap
 
                 PathAngleArc {
@@ -324,7 +307,50 @@ Item {
                 fillColor: "transparent"
                 strokeColor: root.dangerArcProgress > 0
                              ? root.dangerColor : "transparent"
-                strokeWidth: 5
+                strokeWidth: root.dialSize * 0.032
+                capStyle: ShapePath.RoundCap
+
+                PathAngleArc {
+                    centerX: root.dialRadius
+                    centerY: root.dialRadius
+                    radiusX: root.arcRadius
+                    radiusY: root.arcRadius
+                    startAngle: root.pathStartAngle
+                                + root.dangerProgress * root.sweepAngle
+                    sweepAngle: root.dangerArcProgress * root.sweepAngle
+                    moveToStart: true
+                }
+            }
+        }
+
+        // Loi sang mong nam tren chinh dau cac vach chia.
+        Shape {
+            anchors.fill: parent
+            opacity: root.dynamicArcOpacity
+
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: root.normalArcProgress > 0
+                             ? root.accentColor : "transparent"
+                strokeWidth: root.dialSize * 0.011
+                capStyle: ShapePath.RoundCap
+
+                PathAngleArc {
+                    centerX: root.dialRadius
+                    centerY: root.dialRadius
+                    radiusX: root.arcRadius
+                    radiusY: root.arcRadius
+                    startAngle: root.pathStartAngle
+                    sweepAngle: root.normalArcProgress * root.sweepAngle
+                    moveToStart: true
+                }
+            }
+
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: root.dangerArcProgress > 0
+                             ? root.dangerColor : "transparent"
+                strokeWidth: root.dialSize * 0.011
                 capStyle: ShapePath.RoundCap
 
                 PathAngleArc {
@@ -349,7 +375,7 @@ Item {
                 fillColor: "transparent"
                 strokeColor: root.progress > root.dangerProgress
                              ? "#efc6cb" : "#bddce8"
-                strokeWidth: 2
+                strokeWidth: root.dialSize * 0.0045
                 capStyle: ShapePath.RoundCap
 
                 PathAngleArc {

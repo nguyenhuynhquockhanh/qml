@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>CustomGauge.qml</file>
+        <file>TurnIndicator.qml</file>
     </qresource>
 </RCC>
