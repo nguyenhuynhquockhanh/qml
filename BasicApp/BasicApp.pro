@@ -30,7 +30,23 @@ QML_DESIGNER_IMPORT_PATH =
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
 target.path = /home/ras/BasicApp/bin
-INSTALLS += target
+
+# Anh hien thi duoc deploy thanh file rieng tren Pi de Qt khong phai giai ma
+# PNG lon tu qrc va tao nhieu image worker khi khoi dong.
+runtime_assets.files = \
+    images/cluster-bezel.png \
+    images/vehicle-top-display.png \
+    images/warning-headlamp.png \
+    images/warning-battery.png \
+    images/warning-tire.png \
+    images/warning-brake-left.png \
+    images/warning-engine.png \
+    images/warning-seatbelt.png \
+    images/warning-oil.png \
+    images/warning-brake-right.png
+runtime_assets.path = /home/ras/BasicApp/bin/images
+
+INSTALLS += target runtime_assets
 
 # Cấu hình Sysroot và Cross-Compiler chuẩn cho Pi 4 (aarch64)
 QMAKE_SYSROOT = /home/khanhne/rpi-qt/sysroot

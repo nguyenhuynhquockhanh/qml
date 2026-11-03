@@ -19,7 +19,7 @@ Item {
         height: root.height * root.renderScale
         scale: 1 / root.renderScale
         transformOrigin: Item.TopLeft
-        renderTarget: Canvas.Image
+        renderTarget: Canvas.FramebufferObject
         antialiasing: true
 
         onAvailableChanged: if (available) requestPaint()

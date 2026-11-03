@@ -14,6 +14,14 @@ Window {
                                                       layoutScale
                                                       * Screen.devicePixelRatio))
     readonly property real detailRenderScale: Math.max(2, rasterScale)
+    readonly property bool runningOnEglfs:
+        typeof piEglfs !== "undefined" && piEglfs
+
+    function assetUrl(fileName) {
+        return runningOnEglfs
+                ? "image://dashboard/" + fileName
+                : "images/" + fileName
+    }
 
     width: designWidth
     height: designHeight
@@ -81,7 +89,7 @@ Window {
             height: designArea.height * window.rasterScale
             scale: 1 / window.rasterScale
             transformOrigin: Item.TopLeft
-            renderTarget: Canvas.Image
+            renderTarget: Canvas.FramebufferObject
             antialiasing: true
 
             onAvailableChanged: if (available) requestPaint()
@@ -252,6 +260,7 @@ Window {
                 height: 30 * window.detailRenderScale
                 scale: 1 / window.detailRenderScale
                 transformOrigin: Item.TopLeft
+                renderTarget: Canvas.FramebufferObject
                 antialiasing: true
 
                 onAvailableChanged: if (available) requestPaint()
@@ -304,7 +313,7 @@ Window {
             height: 270 * window.detailRenderScale
             scale: 1 / window.detailRenderScale
             transformOrigin: Item.TopLeft
-            renderTarget: Canvas.Image
+            renderTarget: Canvas.FramebufferObject
             antialiasing: true
 
             onAvailableChanged: if (available) requestPaint()
@@ -412,7 +421,7 @@ Window {
 
             Image {
                 anchors.fill: parent
-                source: "images/vehicle-top.png"
+                source: window.assetUrl("vehicle-top-display.png")
                 fillMode: Image.PreserveAspectFit
                 smooth: true
                 mipmap: true
@@ -445,14 +454,14 @@ Window {
 
             Repeater {
                 model: [
-                    { px: 65, py: 224, cx: 430, cy: 510, cw: 100, ch: 84 },
-                    { px: 65, py: 258, cx: 430, cy: 610, cw: 105, ch: 90 },
-                    { px: 65, py: 292, cx: 320, cy: 710, cw: 105, ch: 92 },
-                    { px: 65, py: 326, cx: 660, cy: 920, cw: 105, ch: 92 },
-                    { px: 937, py: 224, cx: 1080, cy: 610, cw: 105, ch: 90 },
-                    { px: 937, py: 258, cx: 650, cy: 710, cw: 105, ch: 92 },
-                    { px: 937, py: 292, cx: 545, cy: 920, cw: 105, ch: 92 },
-                    { px: 937, py: 326, cx: 760, cy: 920, cw: 105, ch: 92 }
+                    { px: 65, py: 224, file: "warning-headlamp.png" },
+                    { px: 65, py: 258, file: "warning-battery.png" },
+                    { px: 65, py: 292, file: "warning-tire.png" },
+                    { px: 65, py: 326, file: "warning-brake-left.png" },
+                    { px: 937, py: 224, file: "warning-engine.png" },
+                    { px: 937, py: 258, file: "warning-seatbelt.png" },
+                    { px: 937, py: 292, file: "warning-oil.png" },
+                    { px: 937, py: 326, file: "warning-brake-right.png" }
                 ]
 
                 delegate: Image {
@@ -460,9 +469,7 @@ Window {
                     y: modelData.py
                     width: 22
                     height: 22
-                    source: "images/dashboard-icons.png"
-                    sourceClipRect: Qt.rect(modelData.cx, modelData.cy,
-                                            modelData.cw, modelData.ch)
+                    source: window.assetUrl(modelData.file)
                     fillMode: Image.PreserveAspectFit
                     smooth: true
                     mipmap: true
@@ -514,7 +521,7 @@ Window {
             y: 27
             width: 1092
             height: 546
-            source: "images/cluster-bezel.png"
+            source: window.assetUrl("cluster-bezel.png")
             fillMode: Image.PreserveAspectFit
             smooth: true
             mipmap: true

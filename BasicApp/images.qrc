@@ -4,7 +4,14 @@
         <file>images/sun.png</file>
         <file>images/white.png</file>
         <file>images/cluster-bezel.png</file>
-        <file>images/vehicle-top.png</file>
-        <file>images/dashboard-icons.png</file>
+        <file>images/vehicle-top-display.png</file>
+        <file>images/warning-headlamp.png</file>
+        <file>images/warning-battery.png</file>
+        <file>images/warning-tire.png</file>
+        <file>images/warning-brake-left.png</file>
+        <file>images/warning-engine.png</file>
+        <file>images/warning-seatbelt.png</file>
+        <file>images/warning-oil.png</file>
+        <file>images/warning-brake-right.png</file>
     </qresource>
 </RCC>
