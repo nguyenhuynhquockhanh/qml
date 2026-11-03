@@ -18,6 +18,7 @@ Item {
     property real outputScale: 1
     property bool showSubGauge: false
     property string subGaugeType: "fuel"
+    property url subGaugeIconSource: ""
     property real subValue: 0.5
     property string subMinText: "E"
     property string subMaxText: "F"
@@ -96,6 +97,7 @@ Item {
             var ctx = getContext("2d")
             ctx.reset()
             ctx.scale(root.renderScale, root.renderScale)
+            ctx.clearRect(0, 0, root.dialSize, root.dialSize)
 
             var cx = root.dialRadius
             var cy = root.dialRadius
@@ -161,7 +163,6 @@ Item {
                 var subEndAngle = subStartAngle - subSweep
                 var subStartRad = radians(subStartAngle)
                 var subSplitRad = radians(subSplitAngle)
-                var subEndRad = radians(subEndAngle)
 
                 // Cung dong ho phu: xanh o muc binh thuong, do o vung cao.
                 ctx.save()
@@ -171,16 +172,6 @@ Item {
                 ctx.arc(cx, cy, subRadius, subStartRad, subSplitRad, true)
                 ctx.lineWidth = 3.2
                 ctx.strokeStyle = root.accentColor
-                ctx.stroke()
-                ctx.restore()
-
-                ctx.save()
-                ctx.shadowBlur = 3
-                ctx.shadowColor = root.dangerColor
-                ctx.beginPath()
-                ctx.arc(cx, cy, subRadius, subSplitRad, subEndRad, true)
-                ctx.lineWidth = 3.2
-                ctx.strokeStyle = root.dangerColor
                 ctx.stroke()
                 ctx.restore()
 
@@ -233,47 +224,48 @@ Item {
                 ctx.strokeStyle = "#20384a"
                 ctx.stroke()
 
-                // Bieu tuong nhien lieu hoac nhiet do dong co.
-                var iconX = cx
-                var iconY = cy + radius - root.dialSize * 0.23
-                ctx.lineWidth = 2
-                ctx.strokeStyle = "#dce8f1"
-                ctx.fillStyle = "#dce8f1"
-
-                if (root.subGaugeType === "temperature") {
-                    ctx.beginPath()
-                    ctx.arc(iconX, iconY + 8, 5, 0, Math.PI * 2)
-                    ctx.fill()
-                    ctx.beginPath()
-                    ctx.moveTo(iconX, iconY + 7)
-                    ctx.lineTo(iconX, iconY - 10)
-                    ctx.stroke()
-                    ctx.beginPath()
-                    ctx.arc(iconX, iconY - 10, 3, Math.PI, 0)
-                    ctx.stroke()
-
-                    for (var wave = 0; wave < 2; ++wave) {
-                        var waveY = iconY + 16 + wave * 5
-                        ctx.beginPath()
-                        ctx.moveTo(iconX - 12, waveY)
-                        ctx.quadraticCurveTo(iconX - 7, waveY - 4,
-                                             iconX - 2, waveY)
-                        ctx.quadraticCurveTo(iconX + 3, waveY + 4,
-                                             iconX + 8, waveY)
-                        ctx.stroke()
-                    }
-                } else {
-                    ctx.strokeRect(iconX - 8, iconY - 10, 13, 19)
-                    ctx.strokeRect(iconX - 5, iconY - 7, 7, 6)
-                    ctx.beginPath()
-                    ctx.moveTo(iconX + 5, iconY - 6)
-                    ctx.quadraticCurveTo(iconX + 13, iconY - 4,
-                                         iconX + 11, iconY + 6)
-                    ctx.lineTo(iconX + 8, iconY + 6)
-                    ctx.stroke()
-                }
             }
         }
+    }
+
+    // Doan canh bao cua cung phu la Shape trong suot, khong co nen bitmap den.
+    Shape {
+        visible: root.showSubGauge
+        x: (root.width - root.dialSize) / 2
+        y: (root.height - root.dialSize) / 2
+        width: root.dialSize
+        height: width
+        antialiasing: true
+
+        ShapePath {
+            fillColor: "transparent"
+            strokeColor: root.dangerColor
+            strokeWidth: 3.2
+            capStyle: ShapePath.RoundCap
+
+            PathAngleArc {
+                centerX: root.dialRadius
+                centerY: root.dialRadius
+                radiusX: root.arcRadius
+                radiusY: root.arcRadius
+                startAngle: -150 - 60 * 0.88 - 90
+                sweepAngle: -60 * 0.12
+                moveToStart: true
+            }
+        }
+    }
+
+    Image {
+        visible: root.showSubGauge && source !== ""
+        x: (root.width - width) / 2
+        y: (root.height - root.dialSize) / 2 + root.dialRadius
+           + root.faceRadius - root.dialSize * 0.23 - height / 2
+        width: 32
+        height: 32
+        source: root.subGaugeIconSource
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        mipmap: true
     }
 
     // Cung gia tri duoc tessellate boi scene graph. Khong con Canvas JavaScript

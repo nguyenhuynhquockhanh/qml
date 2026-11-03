@@ -135,6 +135,7 @@ Window {
             outputScale: window.rasterScale
             showSubGauge: true
             subGaugeType: "fuel"
+            subGaugeIconSource: window.assetUrl("fuel-pump.png")
             subValue: 0.62
             subMinText: "E"
             subMaxText: "F"
@@ -162,6 +163,7 @@ Window {
             outputScale: window.rasterScale
             showSubGauge: true
             subGaugeType: "temperature"
+            subGaugeIconSource: window.assetUrl("coolant-temperature.png")
             subValue: 0.48
             subMinText: "C"
             subMaxText: "H"
@@ -431,7 +433,7 @@ Window {
         TurnIndicator {
             z: 16
             x: 297
-            y: 112
+            y: 124
             pointsLeft: true
             active: true
             renderScale: window.detailRenderScale
@@ -440,10 +442,35 @@ Window {
         TurnIndicator {
             z: 16
             x: 679
-            y: 112
+            y: 124
             pointsLeft: false
             active: true
             renderScale: window.detailRenderScale
+        }
+
+        // Hai den diem mu su dung anh trai/phai do nguoi dung cung cap.
+        Image {
+            z: 16
+            x: 242
+            y: 115
+            width: 42
+            height: 42
+            source: window.assetUrl("blind-spot-left.png")
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            mipmap: true
+        }
+
+        Image {
+            z: 16
+            x: 740
+            y: 115
+            width: 42
+            height: 42
+            source: window.assetUrl("blind-spot-right.png")
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            mipmap: true
         }
 
         // Cac den canh bao mo phong tu bo icon vector nguoi dung cung cap.

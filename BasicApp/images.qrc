@@ -5,6 +5,10 @@
         <file>images/white.png</file>
         <file>images/cluster-bezel.png</file>
         <file>images/vehicle-top-display.png</file>
+        <file>images/blind-spot-left.png</file>
+        <file>images/blind-spot-right.png</file>
+        <file>images/fuel-pump.png</file>
+        <file>images/coolant-temperature.png</file>
         <file>images/warning-headlamp.png</file>
         <file>images/warning-battery.png</file>
         <file>images/warning-tire.png</file>

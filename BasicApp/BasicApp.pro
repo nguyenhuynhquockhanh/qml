@@ -36,6 +36,10 @@ target.path = /home/ras/BasicApp/bin
 runtime_assets.files = \
     images/cluster-bezel.png \
     images/vehicle-top-display.png \
+    images/blind-spot-left.png \
+    images/blind-spot-right.png \
+    images/fuel-pump.png \
+    images/coolant-temperature.png \
     images/warning-headlamp.png \
     images/warning-battery.png \
     images/warning-tire.png \
