@@ -7,6 +7,8 @@
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 #include <QSurfaceFormat>
+#include "EcuDataModel.h"
+#include "UartTelemetrySource.h"
 
 namespace {
 
@@ -90,8 +92,24 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+    // Cong CH340 tren Pi thuong la /dev/ttyUSB0. Co the doi ma khong can
+    // build lai: ECU_SERIAL_PORT=/dev/ttyAMA0 ECU_BAUD_RATE=115200.
+    const QByteArray configuredPort = qgetenv("ECU_SERIAL_PORT");
+    const QString portName = configuredPort.isEmpty()
+            ? QStringLiteral("/dev/ttyUSB0")
+            : QString::fromLocal8Bit(configuredPort);
+    bool baudOk = false;
+    const int configuredBaud = qgetenv("ECU_BAUD_RATE").toInt(&baudOk);
+    const qint32 baudRate = baudOk && configuredBaud > 0
+            ? configuredBaud : 115200;
+    EcuDataModel ecuData;
+    UartTelemetrySource uartSource(&ecuData, portName, baudRate);
+    uartSource.start();
+
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("piEglfs"), eglfs);
+    engine.rootContext()->setContextProperty(QStringLiteral("ecuTelemetry"),
+                                             &ecuData);
     if (eglfs) {
         engine.addImageProvider(QStringLiteral("dashboard"),
                                 new DashboardImageProvider(

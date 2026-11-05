@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>CustomGauge.qml</file>
         <file>TurnIndicator.qml</file>
+        <file>BlinkWarning.qml</file>
     </qresource>
 </RCC>

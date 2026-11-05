@@ -29,8 +29,17 @@ Window {
     title: "Instrument Cluster"
     color: "#e8ecef"
 
-    property real speedVal: 0
-    readonly property real rpmVal: speedVal / 30
+    // qmlscene khong co backend C++; khi preview thi hien gia tri an toan.
+    readonly property real speedVal: typeof ecuTelemetry !== "undefined"
+                                     ? ecuTelemetry.speed : 0
+    // Chua co truong RPM trong goi ECU, khong suy dien tu toc do xe.
+    readonly property real rpmVal: 0
+    readonly property bool braking: typeof ecuTelemetry !== "undefined"
+                                    && ecuTelemetry.braking
+    readonly property bool blindLeftActive:
+        typeof ecuTelemetry !== "undefined" && ecuTelemetry.blindLeft
+    readonly property bool blindRightActive:
+        typeof ecuTelemetry !== "undefined" && ecuTelemetry.blindRight
     property date currentDateTime: new Date()
     property int ambientTemperature: 20
     property string driveMode: "Driving"
@@ -42,34 +51,6 @@ Window {
         running: true
         repeat: true
         onTriggered: window.currentDateTime = new Date()
-    }
-
-    // Animation native, tranh cap phat JavaScript moi 16 ms tren Qt 5/Pi.
-    SequentialAnimation {
-        running: true
-        loops: Animation.Infinite
-
-        NumberAnimation {
-            target: window
-            property: "speedVal"
-            from: 0
-            to: 240
-            duration: 9000
-            easing.type: Easing.InOutSine
-        }
-
-        PauseAnimation { duration: 350 }
-
-        NumberAnimation {
-            target: window
-            property: "speedVal"
-            from: 240
-            to: 0
-            duration: 8000
-            easing.type: Easing.InOutSine
-        }
-
-        PauseAnimation { duration: 350 }
     }
 
     Item {
@@ -449,28 +430,24 @@ Window {
         }
 
         // Hai den diem mu su dung anh trai/phai do nguoi dung cung cap.
-        Image {
+        BlinkWarning {
             z: 16
             x: 242
             y: 115
             width: 42
             height: 42
+            active: window.blindLeftActive
             source: window.assetUrl("blind-spot-left.png")
-            fillMode: Image.PreserveAspectFit
-            smooth: true
-            mipmap: true
         }
 
-        Image {
+        BlinkWarning {
             z: 16
             x: 740
             y: 115
             width: 42
             height: 42
+            active: window.blindRightActive
             source: window.assetUrl("blind-spot-right.png")
-            fillMode: Image.PreserveAspectFit
-            smooth: true
-            mipmap: true
         }
 
         // Cac den canh bao mo phong tu bo icon vector nguoi dung cung cap.
@@ -481,14 +458,14 @@ Window {
 
             Repeater {
                 model: [
-                    { px: 65, py: 224, file: "warning-headlamp.png" },
-                    { px: 65, py: 258, file: "warning-battery.png" },
-                    { px: 65, py: 292, file: "warning-tire.png" },
-                    { px: 65, py: 326, file: "warning-brake-left.png" },
-                    { px: 937, py: 224, file: "warning-engine.png" },
-                    { px: 937, py: 258, file: "warning-seatbelt.png" },
-                    { px: 937, py: 292, file: "warning-oil.png" },
-                    { px: 937, py: 326, file: "warning-brake-right.png" }
+                    { px: 65, py: 224, file: "warning-headlamp.png", brake: false },
+                    { px: 65, py: 258, file: "warning-battery.png", brake: false },
+                    { px: 65, py: 292, file: "warning-tire.png", brake: false },
+                    { px: 65, py: 326, file: "warning-brake-left.png", brake: true },
+                    { px: 937, py: 224, file: "warning-engine.png", brake: false },
+                    { px: 937, py: 258, file: "warning-seatbelt.png", brake: false },
+                    { px: 937, py: 292, file: "warning-oil.png", brake: false },
+                    { px: 937, py: 326, file: "warning-brake-right.png", brake: true }
                 ]
 
                 delegate: Image {
@@ -501,6 +478,7 @@ Window {
                     smooth: true
                     mipmap: true
                     opacity: 0.78
+                    visible: !modelData.brake || window.braking
                 }
             }
         }
