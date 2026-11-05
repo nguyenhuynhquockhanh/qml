@@ -25,7 +25,9 @@ private:
     void disconnectPort();
 
     EcuDataModel *m_model;
+    // Rong = tu dong tim lai thiet bi sau moi lan mat ket noi.
     QString m_portName;
+    QString m_activePortName;
     qint32 m_baudRate;
     int m_fd = -1;
     QSocketNotifier *m_notifier = nullptr;

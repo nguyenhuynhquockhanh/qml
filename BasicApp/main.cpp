@@ -92,12 +92,11 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    // Cong CH340 tren Pi thuong la /dev/ttyUSB0. Co the doi ma khong can
-    // build lai: ECU_SERIAL_PORT=/dev/ttyAMA0 ECU_BAUD_RATE=115200.
+    // Tu dong chon USB serial tren Pi; ECU_SERIAL_PORT co the ghi de khi can.
+    // Vi du: ECU_SERIAL_PORT=/dev/ttyAMA0 ECU_BAUD_RATE=115200.
     const QByteArray configuredPort = qgetenv("ECU_SERIAL_PORT");
-    const QString portName = configuredPort.isEmpty()
-            ? QStringLiteral("/dev/ttyUSB0")
-            : QString::fromLocal8Bit(configuredPort);
+    const QString portName = "/dev/ttyACM0";
+
     bool baudOk = false;
     const int configuredBaud = qgetenv("ECU_BAUD_RATE").toInt(&baudOk);
     const qint32 baudRate = baudOk && configuredBaud > 0

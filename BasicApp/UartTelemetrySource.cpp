@@ -2,6 +2,7 @@
 #include "EcuDataModel.h"
 
 #include <QDebug>
+#include <QDir>
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
@@ -24,6 +25,32 @@ speed_t serialSpeed(qint32 baudRate)
     case 230400: return B230400;
     default: return 0;
     }
+}
+
+QString discoverSerialPort()
+{
+    const QDir byId(QStringLiteral("/dev/serial/by-id"));
+    const QStringList names = byId.entryList(
+                QDir::AllEntries | QDir::System | QDir::NoDotAndDotDot,
+                QDir::Name);
+    // STM32 tren Pi hien tai xuat hien qua USB CDC ACM, khong phai CH340.
+    for (const QString &name : names) {
+        if (name.contains(QStringLiteral("FIREPHX"), Qt::CaseInsensitive))
+            return byId.absoluteFilePath(name);
+    }
+    if (names.size() == 1)
+        return byId.absoluteFilePath(names.first());
+
+    const QDir devices(QStringLiteral("/dev"));
+    for (const QString &pattern : { QStringLiteral("ttyACM*"),
+                                    QStringLiteral("ttyUSB*") }) {
+        const QStringList ports = devices.entryList(
+                    QStringList(pattern), QDir::System | QDir::NoDotAndDotDot,
+                    QDir::Name);
+        if (ports.size() == 1)
+            return devices.absoluteFilePath(ports.first());
+    }
+    return QString();
 }
 }
 
@@ -65,7 +92,18 @@ void UartTelemetrySource::connectPort()
         return;
     }
 
-    const QByteArray path = m_portName.toLocal8Bit();
+    const QString portName = m_portName.isEmpty()
+            ? discoverSerialPort() : m_portName;
+    if (portName.isEmpty()) {
+        const QString waiting = QStringLiteral("waiting for USB serial device");
+        if (m_lastOpenError != waiting) {
+            m_lastOpenError = waiting;
+            qWarning() << "ECU UART" << waiting;
+        }
+        return;
+    }
+
+    const QByteArray path = portName.toLocal8Bit();
     const int fd = ::open(path.constData(), O_RDONLY | O_NOCTTY | O_NONBLOCK | O_CLOEXEC);
     if (fd >= 0) {
         termios options;
@@ -80,11 +118,12 @@ void UartTelemetrySource::connectPort()
                     && ::tcsetattr(fd, TCSANOW, &options) == 0) {
                 ::tcflush(fd, TCIFLUSH);
                 m_fd = fd;
+                m_activePortName = portName;
                 m_lastOpenError.clear();
                 m_notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
                 connect(m_notifier, &QSocketNotifier::activated,
                         this, &UartTelemetrySource::readAvailable);
-                qInfo() << "ECU UART connected:" << m_portName
+                qInfo() << "ECU UART connected:" << m_activePortName
                         << m_baudRate << "baud";
                 return;
             }
@@ -96,7 +135,7 @@ void UartTelemetrySource::connectPort()
     const QString error = QString::fromLocal8Bit(std::strerror(errno));
     if (m_lastOpenError != error) {
         m_lastOpenError = error;
-        qWarning() << "ECU UART unavailable:" << m_portName << error;
+        qWarning() << "ECU UART unavailable:" << portName << error;
     }
 }
 
@@ -136,12 +175,13 @@ void UartTelemetrySource::processBuffer()
 
 void UartTelemetrySource::disconnectPort()
 {
-    qWarning() << "ECU UART disconnected:" << m_portName;
+    qWarning() << "ECU UART disconnected:" << m_activePortName;
     m_notifier->setEnabled(false);
     m_notifier->deleteLater();
     m_notifier = nullptr;
     ::close(m_fd);
     m_fd = -1;
+    m_activePortName.clear();
     m_buffer.clear();
     m_staleTimer.stop();
     m_model->clear();

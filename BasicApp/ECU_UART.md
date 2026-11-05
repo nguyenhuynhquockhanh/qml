@@ -1,7 +1,9 @@
 # ECU UART input
 
 The cluster reads one UTF-8 JSON object per line from the STM32 serial port.
-Default settings: `/dev/ttyUSB0`, 115200 baud, 8N1. The Flask server is not
+Default settings: auto-detect a USB serial device, 115200 baud, 8N1. On the
+current Pi, the device is `/dev/ttyACM0`, with the stable path
+`/dev/serial/by-id/usb-FIREPHX_USB_SER_FX2348N-if00`. The Flask server is not
 required for the Qt dashboard; both can consume the same JSON schema, but only
 one process can own a serial port at a time.
 
@@ -27,7 +29,8 @@ the ECU protocol supplies it; the former speed based estimate was removed.
 Set the port or baud rate before launching the application if needed:
 
 ```sh
-ECU_SERIAL_PORT=/dev/ttyAMA0 ECU_BAUD_RATE=115200 ./BasicApp -platform eglfs
+ECU_SERIAL_PORT=/dev/serial/by-id/usb-FIREPHX_USB_SER_FX2348N-if00 \
+ECU_BAUD_RATE=115200 ./BasicApp -platform eglfs
 ```
 
 To replace UART with SPI later, implement a new input adapter that forwards
