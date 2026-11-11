@@ -16,11 +16,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         EcuDataModel.cpp \
-        UartTelemetrySource.cpp
+        CanTelemetryDecoder.cpp \
+        CanTelemetrySource.cpp
 
 HEADERS += \
         EcuDataModel.h \
-        UartTelemetrySource.h
+        CanTelemetryDecoder.h \
+        CanTelemetrySource.h
 
 RESOURCES += qml.qrc \
     images.qrc

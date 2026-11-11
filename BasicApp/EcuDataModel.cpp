@@ -1,73 +1,55 @@
 #include "EcuDataModel.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonParseError>
-#include <QJsonValue>
 #include <QtGlobal>
-#include <cmath>
 
 namespace {
-
 constexpr double blindSpotThresholdCm = 50.0;
-
-bool numberField(const QJsonObject &object, const char *primary,
-                 const char *alias, double *result)
-{
-    QJsonValue value = object.value(QLatin1String(primary));
-    if (value.isUndefined() && alias)
-        value = object.value(QLatin1String(alias));
-    if (!value.isDouble())
-        return false;
-    const double number = value.toDouble();
-    if (!std::isfinite(number))
-        return false;
-    *result = number;
-    return true;
 }
-
-} // namespace
 
 EcuDataModel::EcuDataModel(QObject *parent) : QObject(parent) {}
 
-bool EcuDataModel::applyJsonLine(const QByteArray &line)
+void EcuDataModel::setMotion(double speedKmh, double rpm)
 {
-    QJsonParseError error;
-    const QJsonDocument document = QJsonDocument::fromJson(line, &error);
-    if (error.error != QJsonParseError::NoError || !document.isObject())
-        return false;
+    setSpeed(qRound(qBound(0.0, speedKmh, 240.0)));
+    setRpm(qRound(qBound(0.0, rpm, 8000.0)));
+}
 
-    const QJsonObject data = document.object();
-    double value = 0;
-    bool accepted = false;
+void EcuDataModel::setBraking(bool braking)
+{
+    if (m_braking == braking)
+        return;
+    m_braking = braking;
+    emit brakingChanged();
+}
 
-    if (numberField(data, "spd", "Speed", &value)) {
-        setSpeed(qRound(qBound(0.0, value, 240.0)));
-        accepted = true;
-    }
-    if (numberField(data, "brk", "Brake", &value)) {
-        setBraking(value != 0);
-        accepted = true;
-    }
-    // snL/snR la khoang cach sonar (cm): Web dashboard canh bao khi < 50.
-    // 255 la gia tri mac dinh khi khong phat hien vat can.
-    if (numberField(data, "snL", "Sonar_L", &value)) {
-        setBlindLeft(value < blindSpotThresholdCm);
-        accepted = true;
-    }
-    if (numberField(data, "snR", "Sonar_R", &value)) {
-        setBlindRight(value < blindSpotThresholdCm);
-        accepted = true;
-    }
-    return accepted;
+void EcuDataModel::setBlindDistances(double leftCm, double rightCm)
+{
+    setBlindLeft(leftCm < blindSpotThresholdCm);
+    setBlindRight(rightCm < blindSpotThresholdCm);
+}
+
+void EcuDataModel::clearMotion()
+{
+    setSpeed(0);
+    setRpm(0);
+}
+
+void EcuDataModel::clearBraking()
+{
+    setBraking(false);
+}
+
+void EcuDataModel::clearBlindSpots()
+{
+    setBlindLeft(false);
+    setBlindRight(false);
 }
 
 void EcuDataModel::clear()
 {
-    setSpeed(0);
-    setBraking(false);
-    setBlindLeft(false);
-    setBlindRight(false);
+    clearMotion();
+    clearBraking();
+    clearBlindSpots();
 }
 
 void EcuDataModel::setSpeed(int speed)
@@ -78,12 +60,12 @@ void EcuDataModel::setSpeed(int speed)
     emit speedChanged();
 }
 
-void EcuDataModel::setBraking(bool braking)
+void EcuDataModel::setRpm(int rpm)
 {
-    if (m_braking == braking)
+    if (m_rpm == rpm)
         return;
-    m_braking = braking;
-    emit brakingChanged();
+    m_rpm = rpm;
+    emit rpmChanged();
 }
 
 void EcuDataModel::setBlindLeft(bool active)

@@ -32,8 +32,8 @@ Window {
     // qmlscene khong co backend C++; khi preview thi hien gia tri an toan.
     readonly property real speedVal: typeof ecuTelemetry !== "undefined"
                                      ? ecuTelemetry.speed : 0
-    // Chua co truong RPM trong goi ECU, khong suy dien tu toc do xe.
-    readonly property real rpmVal: 0
+    readonly property real rpmVal: typeof ecuTelemetry !== "undefined"
+                                   ? ecuTelemetry.rpm : 0
     readonly property bool braking: typeof ecuTelemetry !== "undefined"
                                     && ecuTelemetry.braking
     readonly property bool blindLeftActive:
@@ -131,16 +131,16 @@ Window {
             width: 344
             height: 344
             minValue: 0
-            maxValue: 8
-            majorStep: 1
+            maxValue: 300
+            majorStep: 50
             minorTicksPerStep: 4
             value: window.rpmVal
             titleText: ""
-            unitText: "x1000 rpm"
+            unitText: "rpm"
             accentColor: "#35bde9"
             dangerColor: "#ff3558"
-            dangerStart: 6.5
-            displayDecimals: 1
+            dangerStart: 250
+            displayDecimals: 0
             outputScale: window.rasterScale
             showSubGauge: true
             subGaugeType: "temperature"

@@ -8,7 +8,8 @@
 #include <QSGRendererInterface>
 #include <QSurfaceFormat>
 #include "EcuDataModel.h"
-#include "UartTelemetrySource.h"
+#include "CanTelemetrySource.h"
+#include <cmath>
 
 namespace {
 
@@ -92,18 +93,20 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    // Tu dong chon USB serial tren Pi; ECU_SERIAL_PORT co the ghi de khi can.
-    // Vi du: ECU_SERIAL_PORT=/dev/ttyAMA0 ECU_BAUD_RATE=115200.
-    const QByteArray configuredPort = qgetenv("ECU_SERIAL_PORT");
-    const QString portName = "/dev/ttyACM0";
-
-    bool baudOk = false;
-    const int configuredBaud = qgetenv("ECU_BAUD_RATE").toInt(&baudOk);
-    const qint32 baudRate = baudOk && configuredBaud > 0
-            ? configuredBaud : 115200;
+    // can0 do Linux/MCP2515 cung cap; encoder 280 RPM = 240 km/h mo phong.
+    const QByteArray configuredInterface = qgetenv("ECU_CAN_INTERFACE");
+    const QString interfaceName = configuredInterface.isEmpty()
+            ? QStringLiteral("can0")
+            : QString::fromLocal8Bit(configuredInterface);
+    bool calibrationOk = false;
+    const double configuredRpm = qgetenv("ECU_MOTOR_RPM_AT_240KMH")
+            .toDouble(&calibrationOk);
+    const double motorRpmAt240Kmh = calibrationOk
+            && std::isfinite(configuredRpm) && configuredRpm > 0
+            ? configuredRpm : 280.0;
     EcuDataModel ecuData;
-    UartTelemetrySource uartSource(&ecuData, portName, baudRate);
-    uartSource.start();
+    CanTelemetrySource canSource(&ecuData, interfaceName, motorRpmAt240Kmh);
+    canSource.start();
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("piEglfs"), eglfs);
