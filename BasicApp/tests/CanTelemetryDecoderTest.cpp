@@ -42,8 +42,14 @@ int main(int argc, char *argv[])
     frame.data[0] = 255;
     frame.data[2] = 0;
     decoder.applyFrame(frame);
-    if (!check(!model.blindLeft() && model.blindRight(),
+    if (!check(!model.blindLeft() && !model.blindRight(),
                "sonar sentinel or zero distance failed"))
+        return 1;
+    frame.data[0] = 1;
+    frame.data[2] = 49;
+    decoder.applyFrame(frame);
+    if (!check(model.blindLeft() && model.blindRight(),
+               "valid near-object distances failed"))
         return 1;
 
     frame = {};

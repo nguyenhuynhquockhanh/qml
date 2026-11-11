@@ -30,7 +30,7 @@ listen-only command in the Pi's privileged CAN startup configuration.
 | CAN ID | Payload | Display |
 | --- | --- | --- |
 | `0x020` | Byte 0: nonzero means brake/AEB active. | Show both brake icons while active. |
-| `0x040` | Bytes 0/1/2: left/center/right ultrasonic distance in cm. | Blink left/right blind-spot icons while the corresponding distance is below 50 cm. Center is unused. |
+| `0x040` | Bytes 0/1/2: left/center/right ultrasonic distance in cm. | Blink left/right blind-spot icons for valid distances from 1 to 49 cm. Zero means no valid echo; center is unused. |
 | `0x080` | Bytes 0–1: signed 16-bit motor RPM, little-endian; STM32 sends DLC 8 every 100 ms. | Show actual RPM and map 280 motor RPM to 240 km/h for the simulated speedometer. |
 
 The STM32 firmware provided by the project computes RPM from the encoder

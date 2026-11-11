@@ -24,8 +24,9 @@ void EcuDataModel::setBraking(bool braking)
 
 void EcuDataModel::setBlindDistances(double leftCm, double rightCm)
 {
-    setBlindLeft(leftCm < blindSpotThresholdCm);
-    setBlindRight(rightCm < blindSpotThresholdCm);
+    // 0 means no valid echo in the current ultrasonic CAN payload.
+    setBlindLeft(leftCm > 0 && leftCm < blindSpotThresholdCm);
+    setBlindRight(rightCm > 0 && rightCm < blindSpotThresholdCm);
 }
 
 void EcuDataModel::clearMotion()
