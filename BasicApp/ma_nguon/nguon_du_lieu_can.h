@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CanTelemetryDecoder.h"
+#include "giai_ma_can.h"
 
 #include <QObject>
 #include <QSocketNotifier>

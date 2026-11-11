@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>fonts/OpenSans-Light.ttf</file>
-        <file>images/sun.png</file>
-        <file>images/white.png</file>
         <file>images/cluster-bezel.png</file>
         <file>images/vehicle-top-display.png</file>
         <file>images/blind-spot-left.png</file>

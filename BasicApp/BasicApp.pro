@@ -15,14 +15,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        EcuDataModel.cpp \
-        CanTelemetryDecoder.cpp \
-        CanTelemetrySource.cpp
+        ma_nguon/cau_hinh_do_hoa.cpp \
+        ma_nguon/nha_cung_cap_anh.cpp \
+        ma_nguon/du_lieu_cum_dong_ho.cpp \
+        ma_nguon/giai_ma_can.cpp \
+        ma_nguon/nguon_du_lieu_can.cpp
 
 HEADERS += \
-        EcuDataModel.h \
-        CanTelemetryDecoder.h \
-        CanTelemetrySource.h
+        ma_nguon/cau_hinh_do_hoa.h \
+        ma_nguon/nha_cung_cap_anh.h \
+        ma_nguon/du_lieu_cum_dong_ho.h \
+        ma_nguon/giai_ma_can.h \
+        ma_nguon/nguon_du_lieu_can.h
 
 RESOURCES += qml.qrc \
     images.qrc

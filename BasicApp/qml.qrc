@@ -1,8 +1,18 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>CustomGauge.qml</file>
-        <file>TurnIndicator.qml</file>
-        <file>BlinkWarning.qml</file>
+        <file>qml/Giao_dien_cum_dong_ho.qml</file>
+        <file>qml/Nen_cum_dong_ho.qml</file>
+        <file>qml/Cum_hai_dong_ho.qml</file>
+        <file>qml/Dong_ho.qml</file>
+        <file>qml/Thong_tin_phia_tren.qml</file>
+        <file>qml/Thong_tin_hanh_trinh.qml</file>
+        <file>qml/Canh_duong.qml</file>
+        <file>qml/Xe_trung_bay.qml</file>
+        <file>qml/Den_tin_hieu.qml</file>
+        <file>qml/Xi_nhan.qml</file>
+        <file>qml/Canh_bao_nhap_nhay.qml</file>
+        <file>qml/Cum_bieu_tuong_canh_bao.qml</file>
+        <file>qml/Vien_cum_dong_ho.qml</file>
     </qresource>
 </RCC>

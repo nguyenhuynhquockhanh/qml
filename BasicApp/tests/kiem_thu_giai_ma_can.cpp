@@ -1,5 +1,5 @@
-#include "../CanTelemetryDecoder.h"
-#include "../EcuDataModel.h"
+#include "../ma_nguon/giai_ma_can.h"
+#include "../ma_nguon/du_lieu_cum_dong_ho.h"
 
 #include <QCoreApplication>
 #include <QDebug>

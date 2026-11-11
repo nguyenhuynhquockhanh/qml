@@ -1,5 +1,5 @@
-#include "CanTelemetrySource.h"
-#include "EcuDataModel.h"
+#include "nguon_du_lieu_can.h"
+#include "du_lieu_cum_dong_ho.h"
 
 #include <QDebug>
 #include <cerrno>

@@ -1,5 +1,5 @@
-#include "CanTelemetryDecoder.h"
-#include "EcuDataModel.h"
+#include "giai_ma_can.h"
+#include "du_lieu_cum_dong_ho.h"
 
 CanTelemetryDecoder::CanTelemetryDecoder(EcuDataModel *model,
                                          double motorRpmAt240Kmh)
