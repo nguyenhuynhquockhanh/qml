@@ -1,16 +1,31 @@
 # Cluster CAN input
 
 The Raspberry Pi receives classical CAN frames from Linux SocketCAN on `can0`
-at 125 kbit/s. Configure the MCP2515 interface before starting the dashboard:
+at 125 kbit/s. This cluster only monitors the bus, so configure the MCP2515
+in **listen-only** mode before starting the dashboard:
 
 ```sh
-sudo ip link set can0 up type can bitrate 125000
+sudo ip link set can0 down
+sudo ip link set can0 type can bitrate 125000 listen-only on
+sudo ip link set can0 up
 /home/ras/BasicApp/bin/BasicApp -platform eglfs
 ```
 
 The dashboard uses a nonblocking CAN raw socket with filters for only three
 standard data IDs. It reads frames on Qt's event loop; no serial device, JSON
-bridge, polling thread, or QtSerialBus module is needed.
+bridge, polling thread, or QtSerialBus module is needed. It never sends CAN
+frames or configures the interface. In normal mode, the MCP2515 can still
+send hardware ACK/error bits even when the app only reads and the Linux TX
+packet counter remains zero. Listen-only mode prevents that bus activity.
+It requires another active CAN node to acknowledge transmitted frames.
+
+Check the active mode and error counters with
+`ip -details -statistics link show can0`. If bus errors continue in listen-only
+mode, check transceiver wiring, common ground, termination, and timing. The
+provided STM32 settings imply a 125 kbit/s bit rate with a 75% sample point;
+the Pi's previously observed default was 87.5%.
+The `ip link` setting is not persistent across reboot; use the same
+listen-only command in the Pi's privileged CAN startup configuration.
 
 | CAN ID | Payload | Display |
 | --- | --- | --- |
