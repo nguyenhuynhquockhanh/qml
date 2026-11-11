@@ -30,23 +30,23 @@ int main(int argc, char *argv[])
         return 1;
 
     frame = {};
-    frame.can_id = 0x040;
+    frame.can_id = 0x030;
     frame.can_dlc = 3;
     frame.data[0] = 49;
-    frame.data[1] = 0; // Center sonar must not affect blind spots.
-    frame.data[2] = 50;
+    frame.data[1] = 50;
+    frame.data[2] = 1; // Front sonar must not affect blind spots.
     if (!check(decoder.applyFrame(frame) == CanTelemetryDecoder::BlindSpots
                && model.blindLeft() && !model.blindRight(),
                "left/right sonar threshold failed"))
         return 1;
     frame.data[0] = 255;
-    frame.data[2] = 0;
+    frame.data[1] = 0;
     decoder.applyFrame(frame);
     if (!check(!model.blindLeft() && !model.blindRight(),
                "sonar sentinel or zero distance failed"))
         return 1;
     frame.data[0] = 1;
-    frame.data[2] = 49;
+    frame.data[1] = 49;
     decoder.applyFrame(frame);
     if (!check(model.blindLeft() && model.blindRight(),
                "valid near-object distances failed"))
@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
                "full-scale encoder mapping failed"))
         return 1;
 
-    frame.data[0] = 0x9c; // -100 RPM, forward-only cluster shows zero.
+    frame.data[0] = 0x9c; // -100 RPM: reversed encoder direction.
     frame.data[1] = 0xff;
     decoder.applyFrame(frame);
-    if (!check(model.rpm() == 0 && model.speed() == 0,
-               "signed encoder value failed"))
+    if (!check(model.rpm() == 100 && model.speed() == 86,
+               "negative encoder direction failed"))
         return 1;
 
     frame.data[0] = 0x18;

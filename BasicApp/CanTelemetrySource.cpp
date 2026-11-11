@@ -78,7 +78,7 @@ void CanTelemetrySource::connectSocket()
 
     const can_filter filters[] = {
         { 0x020, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG },
-        { 0x040, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG },
+        { 0x030, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG },
         { 0x080, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG }
     };
     sockaddr_can address = {};
