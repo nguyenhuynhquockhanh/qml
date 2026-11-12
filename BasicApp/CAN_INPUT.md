@@ -25,7 +25,21 @@ mode, check transceiver wiring, common ground, termination, and timing. The
 provided STM32 settings imply a 125 kbit/s bit rate with a 75% sample point;
 the Pi's previously observed default was 87.5%.
 The `ip link` setting is not persistent across reboot; use the same
-listen-only command in the Pi's privileged CAN startup configuration.
+listen-only command in the Pi's privileged CAN startup configuration. The
+repository includes `cau_hinh_can0.service` for this purpose. On the Pi,
+install it once as root (adjust the source path if you copied it elsewhere):
+
+```sh
+sudo install -m 644 /home/ras/BasicApp/cau_hinh_can0.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now cau_hinh_can0.service
+ip -details link show can0
+```
+
+The expected interface flags include `UP` and `LISTEN-ONLY`. Starting the
+dashboard while `can0` is `DOWN / STOPPED` cannot display CAN data. SocketCAN
+can still bind to a down interface; the dashboard now checks the link flags
+before reporting a successful connection and retries every two seconds.
 
 | CAN ID | Payload | Display |
 | --- | --- | --- |

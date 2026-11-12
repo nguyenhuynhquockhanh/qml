@@ -62,7 +62,10 @@ runtime_assets.files = \
     images/warning-brake-right.png
 runtime_assets.path = /home/ras/BasicApp/bin/images
 
-INSTALLS += target runtime_assets
+can_service.files = cau_hinh_can0.service
+can_service.path = /home/ras/BasicApp
+
+INSTALLS += target runtime_assets can_service
 
 # Cấu hình Sysroot và Cross-Compiler chuẩn cho Pi 4 (aarch64)
 QMAKE_SYSROOT = /home/khanhne/rpi-qt/sysroot

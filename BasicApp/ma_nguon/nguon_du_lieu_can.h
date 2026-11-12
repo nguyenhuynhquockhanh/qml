@@ -23,7 +23,7 @@ public:
 private:
     void connectSocket();
     void readAvailable();
-    void disconnectSocket();
+    void disconnectSocket(const QString &reason);
 
     EcuDataModel *m_model;
     QString m_interfaceName;

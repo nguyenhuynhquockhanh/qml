@@ -6,6 +6,7 @@
 #include <cstring>
 #include <linux/can/raw.h>
 #include <net/if.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -76,6 +77,23 @@ void CanTelemetrySource::connectSocket()
         return;
     }
 
+    // bind() co the thanh cong ca khi can0 dang DOWN. Khong bao ket noi
+    // thanh cong roi lap lai connect/disconnect khi Pi chua bat CAN.
+    ifreq interface = {};
+    std::strncpy(interface.ifr_name, name.constData(), IFNAMSIZ - 1);
+    const int flagsResult = ::ioctl(fd, SIOCGIFFLAGS, &interface);
+    if (flagsResult < 0 || !(interface.ifr_flags & IFF_UP)) {
+        const QString error = flagsResult < 0
+                ? QString::fromLocal8Bit(std::strerror(errno))
+                : QStringLiteral("CAN interface is down; configure can0 before launching");
+        ::close(fd);
+        if (error != m_lastError) {
+            m_lastError = error;
+            qWarning() << "CAN interface unavailable:" << m_interfaceName << error;
+        }
+        return;
+    }
+
     const can_filter filters[] = {
         { 0x020, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG },
         { 0x030, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG },
@@ -132,14 +150,17 @@ void CanTelemetrySource::readAvailable()
             return;
         if (count > 0)
             continue;
-        disconnectSocket();
+        const QString reason = count == 0
+                ? QStringLiteral("read returned zero bytes")
+                : QString::fromLocal8Bit(std::strerror(errno));
+        disconnectSocket(reason);
         return;
     }
 }
 
-void CanTelemetrySource::disconnectSocket()
+void CanTelemetrySource::disconnectSocket(const QString &reason)
 {
-    qWarning() << "CAN telemetry disconnected:" << m_interfaceName;
+    qWarning() << "CAN telemetry disconnected:" << m_interfaceName << reason;
     m_notifier->setEnabled(false);
     m_notifier->deleteLater();
     m_notifier = nullptr;

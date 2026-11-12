@@ -1,0 +1,15 @@
+[Unit]
+Description=Configure can0 at 125 kbit/s in listen-only mode for BasicApp
+Requires=sys-subsystem-net-devices-can0.device
+After=sys-subsystem-net-devices-can0.device
+
+[Service]
+Type=oneshot
+ExecStartPre=-/usr/bin/ip link set dev can0 down
+ExecStart=/usr/bin/ip link set dev can0 type can bitrate 125000 listen-only on
+ExecStart=/usr/bin/ip link set dev can0 up
+ExecStop=/usr/bin/ip link set dev can0 down
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
